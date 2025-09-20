@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Discover the latest trends in fashion for 
+    women and men at SA FashionStyle. Shop our wide selection of clothes, bags,
+    jewelry, and more. Elevate your style with our curated collections.">
+    <meta name="keywords" content="clothes, women, men, fashion, bags, jewelry, SA FashionStyle, latest trends, stylish clothing, accessories">
+    <meta name="author" content="HiKraze">
+    <script src="https://smtpjs.com/v3/smtp.js"></script>
+    <link rel="icon" href="images/logowhite.jpeg" type="image/x-icon">
+    <!-- css -->
+    <link rel="stylesheet" href="Style/form.css">
+    <link rel="stylesheet" href="Style/main.css">
+    <!-- Google font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
+    <!-- icon -->
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <title>HiKraze - Login</title>
+    <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3.2.0/dist/email.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="Style/login.css">
+    <script defer src="JavaScript/form.js"></script>
+    <script src="JavaScript/main.js"></script>
+    <!-- <script src="JavaScript/validation.js"></script> -->
+    <script src="JavaScript/cart.js"></script>
+</head>
+<body>
+    <div class="body_Container">
+        <!-- * Header Section * -->
+        <div class="header_Container">
+            <header class="container" id="header">
+                <div class="header_top">
+                      <div class="header_social">
+                        <a href="https://www.instagram.com/sa__fashionstyle/?igsh=eWpjbWFqc3FlbGhl" target="_blank">
+                            <ion-icon name="logo-instagram"></ion-icon>
+                        </a>
+                        <a href="https://www.facebook.com/people/SA_Fashionstyle/100088622209447/?mibextid=LQQJ4d" target="_blank">
+                            <ion-icon name="logo-facebook"></ion-icon>
+                        </a>
+                        <a href="https://wa.me/201007738790" target="_blank">
+                            <ion-icon name="logo-whatsapp"></ion-icon>
+                        </a>
+                      </div>
+                      <img src="images/logo_block.jpeg" alt="HiKraze logo" id="logo">
+                      <div class="header_actions">
+                        <div id="display_login">
+                          <span id="user_name">Prakhar</span>
+                          <a href="#" id="logout" title="Logout" onclick="logout();">
+                           <ion-icon name="log-out-outline"></ion-icon>
+                          </a>
+                        </div>
+                        <a href="login.html" title="Login" id="login_btn">
+                         <ion-icon name="person-circle-outline"></ion-icon>
+                        </a>
+                        <a href="#" class="icon-cart">
+                          <ion-icon name="cart-outline"></ion-icon>
+                          <span id="cart-counter">0</span>
+                        </a>
+                   </div>
+                </div>
+                <nav>
+                    <menu>
+                        <ul>
+                            <li><a href="index.html">Home</a></li>
+                            <li><a href="products.html">Shop</a></li>
+                            <li><a href="#">Contact</a></li>
+                        </ul>
+                    </menu>
+                </nav>
+            </header>
+        </div>
+
+        <!-- * Form Section * -->
+        <div class="form_Container">
+            <div class="container">
+                <div class="section-header">
+                    <h1>Complete Your Profile</h1>
+                    <p>Please fill in your details to continue</p>
+                </div>
+                
+                <form id="userDetailsForm">
+                    <div class="form-group">
+                        <label for="name">Full Name *</label>
+                        <input type="text" id="name" name="name" placeholder="Enter your full name" required>
+                        <span id="nameError" class="alert alert-error">Please enter your full name (minimum 2 characters)</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" readonly>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phone">Phone Number *</label>
+                        <input type="tel" id="phone" name="phone" placeholder="Enter 10-digit mobile number" required>
+                        <span id="phoneError" class="alert alert-error">Please enter a valid 10-digit Indian mobile number</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="address">Street Address *</label>
+                        <textarea id="address" name="address" rows="3" placeholder="House/Flat No., Street, Locality" required></textarea>
+                        <span id="addressError" class="alert alert-error">Please enter your complete address (minimum 5 characters)</span>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="city">City *</label>
+                            <input type="text" id="city" name="city" placeholder="Enter your city" required>
+                            <span id="cityError" class="alert alert-error">Please enter your city</span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="state">State *</label>
+                            <input type="text" id="state" name="state" placeholder="Enter your state" required>
+                            <span id="stateError" class="alert alert-error">Please enter your state</span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="pincode">PIN Code *</label>
+                        <input type="text" id="pincode" name="pincode" placeholder="Enter 6-digit PIN code" maxlength="6" required>
+                        <span id="pincodeError" class="alert alert-error">Please enter a valid 6-digit PIN code</span>
+                    </div>
+                    
+                    <button type="submit" id="submitBtn">
+                        <span id="submitText">Save Details & Continue Shopping</span>
+                        <div class="spinner" id="submitSpinner"></div>
+                    </button>
+                    
+                    <div id="formSuccess" class="alert alert-success" style="display: none; margin-top: 1rem;">
+                        ✅ Details saved successfully! Redirecting to shop...
+                    </div>
+                    
+                    <div id="formError" class="alert alert-error" style="display: none; margin-top: 1rem;">
+                        Failed to save details. Please try again.
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        
+        <!-- * Footer Section * -->    
+        <footer class="footer black-footer">
+            <div class="footer-top">
+               <div class="footer-logo">
+                   <img src="images/logo_block.jpeg" alt="HiKraze logo" width="140">
+                   <p>The customer is at the heart of our unique business model, which includes design.</p>
+               </div>
+               <div class="footer-list">
+                   <div class="list">
+                       <h4>SHOPPING</h4>
+                       <ul>
+                           <li><a href="#">Clothing Store</a></li>
+                           <li><a href="#">Trending Shoes</a></li>
+                           <li><a href="#">Accessories</a></li>
+                           <li><a href="#">Sale</a></li>
+                       </ul>
+                   </div>
+                   <div class="list">
+                       <h4>Customer Services</h4>
+                       <ul>
+                           <li><a href="#">Contact Us</a></li>
+                           <li><a href="#">Payment Methods</a></li>
+                           <li><a href="#">Delivary</a></li>
+                           <li><a href="#">Return & Exchanges</a></li>
+                       </ul>
+                   </div>
+       
+               </div>
+            </div>
+           <div class="footer-bottom">
+               <p class="footer-company-name">
+                  © 2025 All Copyright are reserved by HiKraze .Made with <ion-icon name="heart"></ion-icon>
+                    by <a>HK</a>
+               </p>
+           </div>
+        </footer>    
+    </div>
+
+</body>
+</html>

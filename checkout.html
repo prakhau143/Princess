@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Discover the latest trends in fashion for 
+    women and men at SA FashionStyle. Shop our wide selection of clothes, bags,
+    jewelry, and more. Elevate your style with our curated collections.">
+    <meta name="keywords" content="clothes, women, men, fashion, bags, jewelry, SA FashionStyle, latest trends, stylish clothing, accessories">
+    <meta name="author" content="SA_FashionStyle">
+    <link rel="icon" href="images/logowhite.jpg" type="image/x-icon">
+    <!-- Google font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
+     <!-- css  -->
+    <link rel="stylesheet" href="Style/checkout.css">
+     <!-- animation icon -->
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.7.6/lottie.min.js"></script>
+     <title>HiKraze - Checkout</title>
+</head>
+<body>
+    <div class="checkout" id="checkout-overlay">
+         <div class="checkout-container">
+            <!-- Jewelry Brand Header -->
+            <div class="brand-header">
+                <div class="brand-logo-section">
+                    <div class="jewelry-icon">💎</div>
+                    <div class="brand-text-section">
+                        <h2 class="brand-title">HiKraze Jewelry</h2>
+                        <p class="brand-subtitle">Exquisite Craftsmanship, Timeless Elegance</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="checkout-icon-section">
+                <div id="checkoutIcon"></div>
+                <!-- <h4 class="checkout-title">Review Your Order</h4> -->
+            </div>
+            
+            <!-- Order Already Placed Warning (hidden initially) -->
+            <div id="orderAlreadyPlaced" class="order-already-placed" style="display: none;">
+                <div class="warning-icon">⚠️</div>
+                <h3>Order Already Placed!</h3>
+                <p>You have already placed an order with these items. Please check your email for order confirmation.</p>
+                <div class="previous-order-info">
+                    <p><strong>Previous Order ID:</strong> <span id="previousOrderId">#12345</span></p>
+                    <p><strong>Order Date:</strong> <span id="previousOrderDate">Today</span></p>
+                </div>
+                <div class="warning-actions">
+                    <button onclick="backHome()" class="home-btn">🏠 Go to Home</button>
+                    <button onclick="continueShopping()" class="continue-shopping-btn">✨ Continue Shopping</button>
+                </div>
+            </div>
+
+            <!-- Two Column Layout -->
+            <div class="checkout-content" id="checkoutContent">
+                <!-- Order Summary -->
+                <div class="order-summary" id="orderSummary">
+                    <div class="summary-header">
+                        <h5>✨ Your Selected Jewelry</h5>
+                    </div>
+                    <div id="orderItems"></div>
+                    <div class="order-totals">
+                        <div class="total-line">
+                            <span>Subtotal:</span> <span id="subtotal">₹0.00</span>
+                        </div>
+                        <div class="total-line">
+                            <span>Shipping:</span> <span id="shipping">₹70.00</span>
+                        </div>
+                        <div class="total-line final-total">
+                            <span>Total:</span> <span id="finalTotal">₹70.00</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Customer Details -->
+                <div class="customer-details" id="customerDetails">
+                    <div class="delivery-header">
+                        <h5>🚚 Delivery Details</h5>
+                    </div>
+                    <div id="customerInfo" class="customer-info-card"></div>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="checkout-actions">
+                <button id="placeOrderBtn" onclick="finalizeOrder();" class="place-order-btn">
+                    <span id="placeOrderText">💎 Place Order</span>
+                    <div id="placeOrderSpinner" class="spinner" style="display: none;"></div>
+                </button>
+                <button id="back_btn" onclick="backToCart();" class="back-btn">← Back to Cart</button>
+            </div>
+            
+            <!-- Demo Test Button (for testing without server) -->
+            <div style="text-align: center; margin-top: 15px;">
+                <button onclick="testOrderSuccess()" style="
+                    background: #28a745;
+                    color: white;
+                    border: none;
+                    padding: 8px 15px;
+                    border-radius: 15px;
+                    font-size: 0.8rem;
+                    cursor: pointer;
+                    opacity: 0.7;
+                    margin-right: 10px;
+                ">🧪 Test Order Success (Demo)</button>
+                <button onclick="debugCustomerData()" style="
+                    background: #17a2b8;
+                    color: white;
+                    border: none;
+                    padding: 8px 15px;
+                    border-radius: 15px;
+                    font-size: 0.8rem;
+                    cursor: pointer;
+                    opacity: 0.7;
+                ">🔍 Debug Customer Data</button>
+            </div>
+            
+            <!-- Order Success State (hidden initially) -->
+            <div id="orderSuccess" class="order-success" style="display: none;">
+                <div class="success-animation">
+                    <div class="success-checkmark">✓</div>
+                    <div class="sparkles">✨</div>
+                </div>
+                <h3 class="success-title">Order Placed Successfully!</h3>
+                <p class="success-message">Thank you for choosing HiKraze Jewelry</p>
+                
+                <div class="order-confirmation-card">
+                    <div class="confirmation-header">
+                        <h4>📋 Order Confirmation</h4>
+                    </div>
+                    <div class="order-details">
+                        <div class="detail-row">
+                            <span>Order ID:</span> 
+                            <span id="successOrderId" class="order-id">#12345</span>
+                        </div>
+                        <div class="detail-row">
+                            <span>Total Amount:</span> 
+                            <span id="successTotal" class="total-amount">₹124.05</span>
+                        </div>
+                        <div class="detail-row">
+                            <span>Order Date:</span> 
+                            <span id="successDate" class="order-date">Today</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="order-date-info">
+                    <h4>📅 Order Information</h4>
+                    <p><strong>Date:</strong> <span id="currentDate"></span></p>
+                    <p><strong>Time:</strong> <span id="currentTime"></span></p>
+                    <p>You will receive confirmation emails shortly.</p>
+                </div>
+                
+                <div class="delivery-status">
+                    <div class="status-icon">📦</div>
+                    <h4>Your Order is Being Processed</h4>
+                    <p>Our team is working to prepare your jewelry for delivery. You'll receive updates via email.</p>
+                </div>
+                
+                <div class="success-actions">
+                    <button onclick="continueShopping()" class="continue-shopping-btn">
+                        ✨ Continue Shopping
+                    </button>
+                    <button onclick="backHome()" class="home-btn">
+                        🏠 Go to Home
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Continue Shopping Popup -->
+    <div id="continueShoppingPopup" class="popup-overlay" style="display: none;">
+        <div class="popup-content">
+            <div class="popup-header">
+                <h3>🛍️ Continue Your Shopping Journey</h3>
+                <button onclick="closePopup()" class="close-btn">×</button>
+            </div>
+            <div class="popup-body">
+                <div class="popup-icon">💎</div>
+                <p>Discover more exquisite jewelry pieces in our collection!</p>
+                <div class="popup-features">
+                    <div class="feature">
+                        <span class="feature-icon">✨</span>
+                        <span>Premium Quality</span>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">🚚</span>
+                        <span>Free Shipping on ₹500+</span>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">💍</span>
+                        <span>Handcrafted Designs</span>
+                    </div>
+                </div>
+            </div>
+            <div class="popup-actions">
+                <button onclick="goToProducts()" class="popup-btn primary">
+                    Browse Jewelry
+                </button>
+                <button onclick="closePopup()" class="popup-btn secondary">
+                    Maybe Later
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Perfect Jewelry Brand Styles -->
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #ffeef8 0%, #f0f8ff 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            overflow-y: auto;
+            padding: 15px;
+            margin: 0;
+        }
+        
+        .checkout {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: calc(100vh - 30px);
+            padding: 0;
+        }
+        
+        .checkout-container {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(15px);
+            border-radius: 25px;
+            padding: 30px;
+            max-width: 800px;
+            width: 95%;
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.12);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            overflow: hidden;
+            position: relative;
+            margin: 10px auto;
+        }
+        
+        .brand-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+            padding: 20px 30px;
+            background: linear-gradient(135deg, #fef7ff 0%, #f0f4ff 100%);
+            border-radius: 20px;
+            border: 1px solid rgba(142, 68, 173, 0.1);
+            min-height: 80px;
+            flex-wrap: wrap;
+        }
+        
+        .brand-logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .jewelry-icon {
+            font-size: 2.8rem;
+            animation: sparkle 3s infinite;
+            color: #8e44ad;
+            flex-shrink: 0;
+        }
+        
+        @keyframes sparkle {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            25% { transform: scale(1.05) rotate(5deg); }
+            50% { transform: scale(1.1) rotate(0deg); }
+            75% { transform: scale(1.05) rotate(-5deg); }
+        }
+        
+        .brand-text-section {
+            text-align: left;
+            flex-grow: 1;
+        }
+        
+        .brand-title {
+            color: #2c3e50;
+            font-family: 'Josefin Sans', sans-serif;
+            font-weight: 700;
+            margin: 0 0 5px 0;
+            font-size: 2.2rem;
+            letter-spacing: 1px;
+            line-height: 1.2;
+        }
+        
+        .brand-subtitle {
+            color: #8e44ad;
+            font-style: italic;
+            font-size: 0.95rem;
+            margin: 0;
+            opacity: 0.9;
+            font-weight: 500;
+        }
+        
+        .checkout-icon-section {
+            text-align: center;
+            margin: 25px 0 40px 0;
+            padding: 20px 15px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 15px;
+        }
+        
+        #checkoutIcon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 25px auto;
+            display: block;
+        }
+        
+        .checkout-title {
+            color: #2c3e50;
+            text-align: center;
+            margin: 0;
+            font-family: 'Josefin Sans', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 500;
+            padding-top: 10px;
+        }
+        
+        .order-already-placed {
+            text-align: center;
+            padding: 40px 30px;
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            border-radius: 20px;
+            border: 2px solid #ffc107;
+            margin: 20px 0;
+        }
+        
+        .warning-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .order-already-placed h3 {
+            color: #856404;
+            font-family: 'Josefin Sans', sans-serif;
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+        
+        .order-already-placed p {
+            color: #856404;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        .previous-order-info {
+            background: rgba(255, 255, 255, 0.7);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border: 1px solid rgba(133, 100, 4, 0.2);
+        }
+        
+        .previous-order-info p {
+            margin: 8px 0;
+            font-size: 1rem;
+        }
+        
+        .warning-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 25px;
+            padding: 0 20px;
+        }
+        
+        .warning-actions .home-btn,
+        .warning-actions .continue-shopping-btn {
+            height: 56px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px 20px;
+            box-sizing: border-box;
+        }
+        
+        .checkout-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+        
+        .order-summary, .customer-details {
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 18px;
+            padding: 25px;
+            border: 1px solid rgba(142, 68, 173, 0.1);
+            backdrop-filter: blur(5px);
+            height: fit-content;
+        }
+        
+        .summary-header h5, .delivery-header h5 {
+            color: #8e44ad;
+            font-weight: 600;
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid rgba(142, 68, 173, 0.1);
+            font-size: 1.1rem;
+            text-align: center;
+        }
+        
+        .customer-info-card {
+            background: linear-gradient(135deg, #fef7ff 0%, #f0f4ff 100%);
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(142, 68, 173, 0.15);
+            line-height: 1.6;
+        }
+        
+        .customer-info-card p {
+            margin: 8px 0;
+            color: #2c3e50;
+            font-size: 0.95rem;
+        }
+        
+        .customer-info-card strong {
+            color: #8e44ad;
+            font-weight: 600;
+        }
+        
+        #orderItems {
+            margin-bottom: 20px;
+        }
+        
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(142, 68, 173, 0.1);
+        }
+        
+        .order-item:last-child {
+            border-bottom: none;
+        }
+        
+        .item-info {
+            flex: 1;
+        }
+        
+        .item-name {
+            display: block;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+            font-size: 1rem;
+        }
+        
+        .item-details {
+            display: block;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+        
+        .item-total {
+            font-weight: 600;
+            color: #8e44ad;
+            font-size: 1.1rem;
+        }
+        
+        .order-totals {
+            background: linear-gradient(135deg, #fef7ff 0%, #f0f4ff 100%);
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(142, 68, 173, 0.15);
+        }
+        
+        .total-line {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 1rem;
+            color: #2c3e50;
+        }
+        
+        .total-line.final-total {
+            border-top: 2px solid rgba(142, 68, 173, 0.2);
+            padding-top: 15px;
+            margin-top: 15px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: #8e44ad;
+        }
+        
+        .checkout-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 25px 0 20px 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #fef7ff 0%, #f0f4ff 100%);
+            border-radius: 18px;
+            border: 1px solid rgba(142, 68, 173, 0.1);
+            align-items: center;
+        }
+        
+        .place-order-btn {
+            background: linear-gradient(135deg, #8e44ad 0%, #e74c3c 100%);
+            color: white;
+            border: 2px solid transparent;
+            padding: 0;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(142, 68, 173, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            height: 56px;
+            width: 100%;
+            box-sizing: border-box;
+            line-height: 1;
+        }
+        
+        .place-order-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(142, 68, 173, 0.4);
+        }
+        
+        .place-order-btn:active {
+            transform: translateY(0px);
+        }
+        
+        .back-btn {
+            background: rgba(255, 255, 255, 0.9);
+            color: #8e44ad;
+            border: 2px solid rgba(142, 68, 173, 0.3);
+            padding: 0;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            height: 56px;
+            width: 100%;
+            box-sizing: border-box;
+            font-size: 1rem;
+            line-height: 1;
+        }
+        
+        .back-btn:hover {
+            background: rgba(142, 68, 173, 0.1);
+            border-color: rgba(142, 68, 173, 0.5);
+            transform: translateY(-1px);
+        }
+        
+        .place-order-btn span,
+        .back-btn span {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .order-success {
+            text-align: center;
+            padding: 30px 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            border: 1px solid rgba(142, 68, 173, 0.1);
+            margin-top: 20px;
+        }
+        
+        .success-animation {
+            position: relative;
+            margin-bottom: 30px;
+        }
+        
+        .success-checkmark {
+            font-size: 4rem;
+            color: #27ae60;
+            background: #d5f4e6;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            animation: bounceIn 0.6s ease-out;
+        }
+        
+        @keyframes bounceIn {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        
+        .sparkles {
+            position: absolute;
+            top: -10px;
+            right: 20px;
+            font-size: 1.5rem;
+            animation: float 2s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .success-title {
+            color: #2c3e50;
+            font-family: 'Josefin Sans', sans-serif;
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+        
+        .success-message {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+        }
+        
+        .order-confirmation-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        .confirmation-header h4 {
+            margin: 0 0 20px 0;
+            font-size: 1.3rem;
+        }
+        
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 1rem;
+        }
+        
+        .order-id, .total-amount {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .delivery-status {
+            background: #fff3cd;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 25px 0;
+            border-left: 4px solid #ffc107;
+        }
+        
+        .status-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+        
+        .delivery-status h4 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+        
+        .delivery-status p {
+            color: #856404;
+            margin: 0;
+            line-height: 1.5;
+        }
+        
+        .order-date-info {
+            background: linear-gradient(135deg, #e8f5e8 0%, #f0f8ff 100%);
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border: 1px solid rgba(39, 174, 96, 0.2);
+        }
+        
+        .order-date-info h4 {
+            color: #27ae60;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }
+        
+        .order-date-info p {
+            color: #2c3e50;
+            margin: 5px 0;
+            font-size: 0.95rem;
+        }
+        
+        .success-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 25px;
+            padding: 20px 15px;
+            background: linear-gradient(135deg, #fef7ff 0%, #f0f4ff 100%);
+            border-radius: 15px;
+            border: 1px solid rgba(142, 68, 173, 0.1);
+        }
+        
+        .success-actions .continue-shopping-btn,
+        .success-actions .home-btn {
+            height: 56px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px 20px;
+            box-sizing: border-box;
+        }
+        
+        .continue-shopping-btn {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+        }
+        
+        .continue-shopping-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+        }
+        
+        .home-btn {
+            background: transparent;
+            color: #2c3e50;
+            border: 2px solid #bdc3c7;
+            padding: 15px 25px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .home-btn:hover {
+            background: #ecf0f1;
+            border-color: #95a5a6;
+        }
+        
+        /* Popup Styles */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .popup-content {
+            background: white;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .popup-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 20px 20px 0 0;
+            position: relative;
+        }
+        
+        .popup-header h3 {
+            margin: 0;
+            font-family: 'Josefin Sans', sans-serif;
+            font-size: 1.5rem;
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .popup-body {
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .popup-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+        
+        .popup-body p {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+        
+        .popup-features {
+            display: flex;
+            justify-content: space-around;
+            margin: 25px 0;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .feature {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            min-width: 120px;
+        }
+        
+        .feature-icon {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+        
+        .feature span:last-child {
+            font-size: 0.9rem;
+            color: #2c3e50;
+            font-weight: 500;
+            text-align: center;
+        }
+        
+        .popup-actions {
+            padding: 0 30px 30px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        
+        .popup-btn {
+            padding: 15px 25px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            font-size: 1rem;
+        }
+        
+        .popup-btn.primary {
+            background: linear-gradient(135deg, #8e44ad 0%, #3498db 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(142, 68, 173, 0.3);
+        }
+        
+        .popup-btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(142, 68, 173, 0.4);
+        }
+        
+        .popup-btn.secondary {
+            background: transparent;
+            color: #7f8c8d;
+            border: 2px solid #bdc3c7;
+        }
+        
+        .popup-btn.secondary:hover {
+            background: #ecf0f1;
+            border-color: #95a5a6;
+        }
+        
+        /* Mobile Responsive - Perfect Alignment */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px 5px;
+            }
+            
+            .checkout-container {
+                padding: 20px 15px;
+                margin: 0;
+                border-radius: 20px;
+                max-width: 100%;
+                width: calc(100vw - 20px);
+            }
+            
+            .brand-header {
+                padding: 20px 15px;
+                margin-bottom: 20px;
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .brand-logo-section {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .brand-text-section {
+                text-align: center;
+            }
+            
+            .brand-title {
+                font-size: 1.8rem;
+            }
+            
+            .checkout-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .order-summary, .customer-details {
+                padding: 20px 15px;
+            }
+            
+            .checkout-actions {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .place-order-btn, .back-btn {
+                width: 100%;
+                height: 56px;
+                padding: 0;
+                font-size: 1rem;
+                font-weight: 600;
+            }
+            
+            .order-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+                padding: 12px 0;
+            }
+            
+            .item-total {
+                align-self: flex-end;
+                font-size: 1.2rem;
+            }
+            
+            .total-line {
+                font-size: 0.95rem;
+            }
+            
+            .total-line.final-total {
+                font-size: 1.1rem;
+            }
+            
+            .success-actions,
+            .warning-actions {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .success-actions .continue-shopping-btn,
+            .success-actions .home-btn,
+            .warning-actions .continue-shopping-btn,
+            .warning-actions .home-btn {
+                width: 100%;
+                height: 56px;
+            }
+            
+            .popup-content {
+                width: 95%;
+                margin: 10px;
+            }
+            
+            .popup-features {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .popup-actions {
+                flex-direction: column;
+                gap: 12px;
+            }
+            
+            .popup-btn {
+                width: 100%;
+            }
+            
+            .customer-info-card p {
+                font-size: 0.9rem;
+                word-wrap: break-word;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .checkout-container {
+                padding: 15px 12px;
+                width: calc(100vw - 15px);
+            }
+            
+            .brand-title {
+                font-size: 1.3rem;
+            }
+            
+            .checkout-title {
+                font-size: 1.2rem;
+            }
+            
+            .summary-header h5, .delivery-header h5 {
+                font-size: 1rem;
+            }
+            
+            .order-summary, .customer-details {
+                padding: 15px 12px;
+            }
+        }
+    </style>
+
+    <script>
+        function continueShopping() {
+            document.getElementById('continueShoppingPopup').style.display = 'flex';
+        }
+        
+        function closePopup() {
+            document.getElementById('continueShoppingPopup').style.display = 'none';
+        }
+        
+        function goToProducts() {
+            window.location.href = 'products.html';
+        }
+        
+        function backHome() {
+            window.location.href = 'index.html';
+        }
+        
+        // Update current date and time when page loads
+        function updateDateTime() {
+            const now = new Date();
+            const options = { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                timeZone: 'Asia/Kolkata'
+            };
+            const timeOptions = {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                timeZone: 'Asia/Kolkata'
+            };
+            
+            const currentDateElement = document.getElementById('currentDate');
+            const currentTimeElement = document.getElementById('currentTime');
+            
+            if (currentDateElement) {
+                currentDateElement.textContent = now.toLocaleDateString('en-IN', options);
+            }
+            if (currentTimeElement) {
+                currentTimeElement.textContent = now.toLocaleTimeString('en-IN', timeOptions);
+            }
+        }
+        
+        // Update date/time when page loads
+        document.addEventListener('DOMContentLoaded', updateDateTime);
+        
+        // Update date/time every second
+        setInterval(updateDateTime, 1000);
+        
+        // Check for duplicate orders when page loads
+        function checkForDuplicateOrder() {
+            const cartItems = JSON.parse(localStorage.getItem('cart') || '[]');
+            const lastOrder = JSON.parse(localStorage.getItem('lastOrder') || 'null');
+            
+            if (lastOrder && cartItems.length > 0) {
+                // Check if current cart items match last order items
+                const currentCartHash = generateCartHash(cartItems);
+                const lastOrderHash = lastOrder.cartHash;
+                
+                if (currentCartHash === lastOrderHash) {
+                    // Show duplicate order warning
+                    showDuplicateOrderWarning(lastOrder);
+                    return true;
+                }
+            }
+            return false;
+        }
+        
+        // Generate a hash for cart items to compare orders
+        function generateCartHash(cartItems) {
+            return cartItems.map(item => `${item.id}-${item.quantity}`).sort().join('|');
+        }
+        
+        // Show duplicate order warning
+        function showDuplicateOrderWarning(lastOrder) {
+            document.getElementById('checkoutContent').style.display = 'none';
+            document.querySelector('.checkout-actions').style.display = 'none';
+            document.getElementById('orderAlreadyPlaced').style.display = 'block';
+            
+            // Update previous order info
+            document.getElementById('previousOrderId').textContent = lastOrder.orderId || '#N/A';
+            document.getElementById('previousOrderDate').textContent = lastOrder.date || 'Unknown';
+            
+            // Update checkout title
+            document.querySelector('.checkout-title').textContent = 'Duplicate Order Detected';
+        }
+        
+        // Store order information when order is placed successfully
+        function storeOrderInfo(orderId, cartItems) {
+            const orderInfo = {
+                orderId: orderId,
+                date: new Date().toLocaleDateString('en-IN', { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric',
+                    timeZone: 'Asia/Kolkata'
+                }),
+                cartHash: generateCartHash(cartItems),
+                timestamp: Date.now()
+            };
+            localStorage.setItem('lastOrder', JSON.stringify(orderInfo));
+        }
+        
+        // Check for duplicate orders when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            updateDateTime();
+            checkForDuplicateOrder();
+        });
+        
+        // Test function for order success popup
+        function testOrderSuccess() {
+            if (window.checkoutManager) {
+                const testOrderId = 'TEST' + Date.now().toString().slice(-6);
+                window.checkoutManager.showOrderSuccess(testOrderId);
+            } else {
+                alert('Checkout manager not initialized. Please refresh the page.');
+            }
+        }
+        
+        // Debug function to check customer data
+        function debugCustomerData() {
+            const currentUserEmail = localStorage.getItem('userEmail');
+            const currentCustomerEmail = localStorage.getItem('currentCustomerEmail');
+            const currentCustomerData = localStorage.getItem('currentCustomerData');
+            
+            let debugInfo = `🔍 Customer Data Debug Info:\n\n`;
+            debugInfo += `📧 Logged-in User Email: ${currentUserEmail || 'None'}\n`;
+            debugInfo += `👤 Current Customer Email: ${currentCustomerEmail || 'None'}\n`;
+            debugInfo += `📋 Has Current Customer Data: ${currentCustomerData ? 'Yes' : 'No'}\n\n`;
+            
+            // Check all stored customer data
+            debugInfo += `📁 All Stored Customer Data:\n`;
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key.startsWith('customerData_')) {
+                    const email = key.replace('customerData_', '');
+                    debugInfo += `   • ${email}\n`;
+                }
+            }
+            
+            if (currentCustomerData) {
+                const data = JSON.parse(currentCustomerData);
+                debugInfo += `\n📝 Current Customer Details:\n`;
+                debugInfo += `   Name: ${data.name || 'N/A'}\n`;
+                debugInfo += `   Phone: ${data.phone || 'N/A'}\n`;
+                debugInfo += `   City: ${data.city || 'N/A'}\n`;
+            }
+            
+            alert(debugInfo);
+        }
+    </script>
+    
+    <script src="JavaScript/checkout.js"></script>
+</body>
+</html>

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 500px; margin: 50px auto; padding: 20px; }
+        .form-group { margin: 20px 0; }
+        input { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ddd; border-radius: 5px; }
+        button { background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
+        button:disabled { background: #ccc; }
+        .otp-section { display: none; margin-top: 20px; padding: 20px; background: #f8f9fa; border-radius: 5px; }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <h2>🧪 OTP Test</h2>
+    
+    <div class="form-group">
+        <label>Email Address:</label>
+        <input type="email" id="email" placeholder="Enter your email">
+        <button id="sendBtn" onclick="sendOTP()">Send OTP</button>
+    </div>
+    
+    <div id="otpSection" class="otp-section">
+        <label>Enter OTP:</label>
+        <input type="text" id="otp" placeholder="Enter 6-digit OTP" maxlength="6">
+        <button id="verifyBtn" onclick="verifyOTP()">Verify OTP</button>
+    </div>
+    
+    <div id="message"></div>
+
+    <script>
+        const API_BASE = 'http://localhost:3002/api';
+        
+        async function sendOTP() {
+            const email = document.getElementById('email').value;
+            const messageDiv = document.getElementById('message');
+            const sendBtn = document.getElementById('sendBtn');
+            
+            if (!email) {
+                messageDiv.innerHTML = '<div class="error">Please enter an email</div>';
+                return;
+            }
+            
+            sendBtn.disabled = true;
+            sendBtn.textContent = 'Sending...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/send-otp`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+                
+                const data = await response.json();
+                console.log('Response:', data);
+                
+                if (response.ok && data.success) {
+                    messageDiv.innerHTML = '<div class="success">✅ OTP sent! Check your email.</div>';
+                    document.getElementById('otpSection').style.display = 'block';
+                } else {
+                    messageDiv.innerHTML = `<div class="error">❌ ${data.error || 'Failed to send OTP'}</div>`;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                messageDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+            } finally {
+                sendBtn.disabled = false;
+                sendBtn.textContent = 'Send OTP';
+            }
+        }
+        
+        async function verifyOTP() {
+            const email = document.getElementById('email').value;
+            const otp = document.getElementById('otp').value;
+            const messageDiv = document.getElementById('message');
+            const verifyBtn = document.getElementById('verifyBtn');
+            
+            if (!otp || otp.length !== 6) {
+                messageDiv.innerHTML = '<div class="error">Please enter a valid 6-digit OTP</div>';
+                return;
+            }
+            
+            verifyBtn.disabled = true;
+            verifyBtn.textContent = 'Verifying...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/verify-otp`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, otp })
+                });
+                
+                const data = await response.json();
+                console.log('Verify Response:', data);
+                
+                if (response.ok && data.success) {
+                    messageDiv.innerHTML = '<div class="success">🎉 OTP verified successfully!</div>';
+                    localStorage.setItem('sessionToken', data.sessionToken);
+                    localStorage.setItem('userEmail', data.email);
+                } else {
+                    messageDiv.innerHTML = `<div class="error">❌ ${data.error || 'Invalid OTP'}</div>`;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                messageDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+            } finally {
+                verifyBtn.disabled = false;
+                verifyBtn.textContent = 'Verify OTP';
+            }
+        }
+    </script>
+</body>
+</html>
