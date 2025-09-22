@@ -154,6 +154,10 @@ main{
 }
 .header_top img{
     width: 100px;
+    height: auto;
+    max-width: 100%;
+    object-fit: contain;
+    transition: all 0.3s ease;
 }
 nav{
     position: relative;

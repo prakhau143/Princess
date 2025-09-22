@@ -294,13 +294,14 @@ class CustomerDetailsForm {
             const data = await response.json();
 
             if (response.ok && data.success) {
-                // Store customer data locally with email-specific key
-                const customerKey = `customerData_${this.userEmail}`;
-                localStorage.setItem(customerKey, JSON.stringify(formData));
+                // Store customer data with email as key for multi-user support
+                const userSpecificKey = `customerData_${this.userEmail}`;
+                localStorage.setItem(userSpecificKey, JSON.stringify(formData));
+                localStorage.setItem("customerData", JSON.stringify(formData));
+                localStorage.setItem("currentCustomerData", JSON.stringify(formData));
+                localStorage.setItem("currentCustomerEmail", this.userEmail);
                 
-                // Also store the current customer data for checkout
-                localStorage.setItem('currentCustomerData', JSON.stringify(formData));
-                localStorage.setItem('currentCustomerEmail', this.userEmail);
+                console.log('Customer data saved successfully for:', this.userEmail);
                 
                 this.showSuccess('✅ Details saved successfully! Redirecting to shop...');
                 

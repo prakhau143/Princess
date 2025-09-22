@@ -112,12 +112,20 @@ document.addEventListener('DOMContentLoaded', function() {
 function setupUI() {
     let logout = document.getElementById("display_login");
     let login = document.getElementById("login_btn");
-    let token = localStorage.getItem("email");
+    let sessionToken = localStorage.getItem("sessionToken");
+    let userEmail = localStorage.getItem("userEmail");
 
     if (logout && login) {
-        if (token) {
+        if (sessionToken && userEmail) {
             logout.style.display = "flex";
             login.style.display = "none";
+            
+            // Update user name display if element exists
+            const userNameElement = document.getElementById("user_name");
+            if (userNameElement) {
+                const emailName = userEmail.split('@')[0];
+                userNameElement.textContent = emailName.charAt(0).toUpperCase() + emailName.slice(1);
+            }
         } else {
             logout.style.display = "none";
             login.style.display = "inline-block";
@@ -126,8 +134,39 @@ function setupUI() {
 }
 
 function logout(){
+    // Clear all user session data
+    localStorage.removeItem("sessionToken");
+    localStorage.removeItem("userEmail");
     localStorage.removeItem("email");
     localStorage.removeItem("password");
+    localStorage.removeItem("currentCustomerData");
+    localStorage.removeItem("currentCustomerEmail");
+    localStorage.removeItem("customerData");
+    localStorage.removeItem("cart");
+    localStorage.removeItem("orderConfirmation");
+    
+    // Clear any user-specific customer data
+    const allKeys = Object.keys(localStorage);
+    allKeys.forEach(key => {
+        if (key.startsWith('customerData_')) {
+            localStorage.removeItem(key);
+        }
+    });
+    
+    console.log('User logged out successfully');
     setupUI();
+    
+    // Redirect to login page
+    window.location.href = 'login.html';
 }
+
+// Initialize UI on page load
+document.addEventListener('DOMContentLoaded', function() {
+    setupUI();
+});
+
+// Also run setupUI when page loads (for compatibility)
+window.addEventListener('load', function() {
+    setupUI();
+});
 setupUI();

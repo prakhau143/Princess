@@ -1,193 +1,137 @@
-let cart = [];
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
 let products = [];
-let totalPrice = document.getElementById("total_price");
-let cartCounter = document.getElementById("cart-counter");
-let cartItemsCount = document.getElementById("cart_counts");
-const cartTextElements = document.querySelectorAll(".cart_products");
-const btnControl = document.querySelector(".btn_control");
-const cartTotal = document.querySelector(".cart_total");
 
-// Only initialize cart functionality if cart elements exist
-if (cartCounter || totalPrice || cartTextElements.length > 0) {
-    loadCart();
-    getData();
-    checkCart();
-}
-
-async function getData() {
-    let response = await fetch('json/products.json');
-    let json = await response.json();
-    products = json;
-}
-function loadCart() {
-    let storedCart = localStorage.getItem('cart');
-    if (storedCart) {
-        cart = JSON.parse(storedCart);
+// Load products from JSON
+async function loadProducts() {
+    try {
+        const response = await fetch('./json/products.json');
+        products = await response.json();
+    } catch (error) {
+        console.error('Error loading products:', error);
     }
 }
 
-function saveCart() {
-    localStorage.setItem('cart', JSON.stringify(cart));
+// Initialize cart on page load
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadProducts();
+    displayCart();
+});
+
+function addToCart(productId) {
+    const product = products.find(p => p.id === productId);
+    if (!product) return;
+
+    const existingItem = cart.find(item => item.id === productId);
+    if (existingItem) {
+        existingItem.quantity += 1;
+    } else {
+        cart.push({
+            id: productId,
+            name: product.name,
+            price: product.price,
+            image: product.images[0],
+            quantity: 1
+        });
+    }
+    
+    localStorage.setItem("cart", JSON.stringify(cart));
+    updateCartCount();
+    displayCart();
 }
 
-// Function to completely clear cart and update UI
-function clearCartCompletely() {
-    cart = [];
-    localStorage.removeItem('cart');
-    
-    // Update cart counter
-    if (cartCounter) cartCounter.innerHTML = 0;
-    
-    // Update cart display
-    cartTextElements.forEach(element => {
-        element.classList.add("empty");
-        element.innerHTML = "Your cart is empty";
-    });
-    
-    // Hide cart controls
-    if (btnControl) btnControl.style.display = "none";
-    if (cartTotal) cartTotal.style.display = "none";
-    
-    // Update total price
-    if (totalPrice) totalPrice.innerHTML = "₹0.00";
-    
-    // Update cart items count
-    if (cartItemsCount) cartItemsCount.innerHTML = 0;
-    
-    checkCartPage(0, 0);
-    
-    console.log('Cart cleared completely');
+function removeFromCart(productId) {
+    cart = cart.filter(item => item.id !== productId);
+    localStorage.setItem("cart", JSON.stringify(cart));
+    updateCartCount();
+    displayCart();
 }
 
-function addToCart(productId,inputQuantity = 1) {
-    let product = products.find(p => p.id == productId);
-    if (product) {
-        let existingProduct = cart.find(p => p.id == productId);
-        if (existingProduct) {
-            existingProduct.quantity += 1;
+function updateQuantity(productId, newQuantity) {
+    const item = cart.find(item => item.id === productId);
+    if (item) {
+        if (newQuantity <= 0) {
+            removeFromCart(productId);
         } else {
-            let productWithQuantity = { ...product, quantity: inputQuantity };
-            cart.push(productWithQuantity);
+            item.quantity = newQuantity;
+            localStorage.setItem("cart", JSON.stringify(cart));
+            displayCart();
         }
-        saveCart();
-        checkCart();
     }
 }
 
-function addCartToHTML() {
-    let content = ``;
-    cart.forEach((product, index) => {
-        let price = parseFloat(product.price.replace(/[$₹,]/g, ''));
-        let totalPrice = price * product.quantity;
-        content += `
-        <div class="cart_product">
-            <div class="cart_product_img">  
-                <img src=${product.images[0]}>
-            </div>
-            <div class="cart_product_info">  
-                <div class="top_card">
-                    <div class="left_card">
-                        <h4 class="product_name">${product.name}</h4>
-                        <span class="product_price">${product.price}</span>
-                    </div>
-                    <div class="remove_product" onclick="removeFromCart(${index})">
-                        <ion-icon name="close-outline"></ion-icon>
-                    </div>
-                </div>
-                <div class="buttom_card">
-                    <div class="counts">
-                        <button class="counts_btns minus"  onclick="decreaseQuantity(${index})">-</button>
-                        <input type="number" inputmode="numeric" name="productCount" min="1" step="1" max="999"
-                            class="product_count"  value=${product.quantity}>
-                        <button  class="counts_btns plus" onclick="increaseQuantity(${index})">+</button>
-                    </div>
-                    <span class="total_price">₹${totalPrice.toFixed(2)}</span>
-                </div>
-            </div>
-        </div>`;
+function updateCartCount() {
+    const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
+    const cartCountElements = document.querySelectorAll('.cart-count');
+    cartCountElements.forEach(element => {
+        element.textContent = cartCount;
     });
-    cartTextElements.forEach(element => {
-        element.innerHTML = content;
-    });;
 }
 
-function removeFromCart(index) {
-    cart.splice(index, 1);
-    saveCart();
-    checkCart();
-}
-function increaseQuantity(index){
-    cart[index].quantity += 1;
-    saveCart();
-    checkCart();
-}
-function decreaseQuantity(index) {
-    if (cart[index].quantity > 1) {
-        cart[index].quantity -= 1;
-        saveCart();
-        checkCart();
-    } else {
-        removeFromCart(index);
+function displayCart() {
+    const cartContainer = document.getElementById("cart-container");
+    if (!cartContainer) return;
+
+    if (cart.length === 0) {
+        cartContainer.innerHTML = `
+            <div class="empty-cart">
+                <h3>Your cart is empty</h3>
+                <p>Add some items to get started!</p>
+                <a href="products.html" class="btn btn-primary">Continue Shopping</a>
+            </div>
+        `;
+        return;
     }
+
+    let total = 0;
+    let cartHTML = '';
+
+    cart.forEach(item => {
+        const price = parseFloat(item.price.replace(/[$₹,]/g, ''));
+        const itemTotal = price * item.quantity;
+        total += itemTotal;
+
+        cartHTML += `
+            <div class="cart-item" data-id="${item.id}">
+                <div class="item-image">
+                    <img src="${item.image}" alt="${item.name}">
+                </div>
+                <div class="item-details">
+                    <h4>${item.name}</h4>
+                    <p class="item-price">${item.price}</p>
+                </div>
+                <div class="quantity-controls">
+                    <button onclick="updateQuantity(${item.id}, ${item.quantity - 1})" class="qty-btn">-</button>
+                    <span class="quantity">${item.quantity}</span>
+                    <button onclick="updateQuantity(${item.id}, ${item.quantity + 1})" class="qty-btn">+</button>
+                </div>
+                <div class="item-total">
+                    ₹${itemTotal.toFixed(2)}
+                </div>
+                <button onclick="removeFromCart(${item.id})" class="remove-btn">×</button>
+            </div>
+        `;
+    });
+
+    cartContainer.innerHTML = cartHTML;
+    displayInCartPage(total);
+    updateCartCount();
 }
 
-function updateTotalPrice() {
-    let total = cart.reduce((sum, product) => {
-        let price = parseFloat(product.price.replace(/[$₹,]/g, ''));
-        return sum + (price * product.quantity);
-    }, 0);
-    totalPrice.innerHTML = `₹${total.toFixed(2)}`;
-    localStorage.setItem("total price" , total + 70);
-    return total;
-}
-
-// Initial call to display the cart products on page load
-function checkCart(){
-    if (cart.length == 0) {
-        cartTextElements.forEach(element => {
-            element.classList.add("empty");
-            element.innerHTML = "Your cart is empty";
-        })
-        if (cartCounter) cartCounter.innerHTML = 0;
-        if (btnControl) btnControl.style.display = "none";
-        if (cartTotal) cartTotal.style.display = "none";
-        checkCartPage(0,0);
-    } else {
-        cartTextElements.forEach(element => {
-            element.classList.remove("empty");
-        })
-        addCartToHTML();
-        let totalQuantity = cart.reduce((sum, product) => sum + product.quantity, 0);
-        if (cartCounter) cartCounter.innerHTML = totalQuantity;
-        if (btnControl) btnControl.style.display = "flex";
-        if (cartTotal) cartTotal.style.display = "flex";
-        let total = updateTotalPrice();
-        checkCartPage(total,totalQuantity);       
-    }
-}
-// Add cart page not cart section
-function checkCartPage(total,totalQuantity){
-    if (window.location.pathname.includes("cartPage.html")) {
-        if (cart.length == 0) {
-            cartItemsCount.innerHTML = `(0 items)`;
-            document.getElementById("Subtotal").innerHTML = `₹0.00`;
-            document.getElementById("total_order").innerHTML = `₹0.00`;
-        }
-        else{
-            cartItemsCount.innerHTML = `(${totalQuantity} items)`;
-            displayInCartPage(total);
-        }
-    }
-}
-function displayInCartPage(total){
+function displayInCartPage(total) {
     let subTotal = document.getElementById("Subtotal");
-    subTotal.innerHTML = `₹${total.toFixed(2)}`;
-    let totalOrder= parseFloat(subTotal.innerHTML.replace('₹', '')) + 70;
-    document.getElementById("total_order").innerHTML = `₹${totalOrder.toFixed(2)}`;
+    if (subTotal) {
+        subTotal.innerHTML = `₹${total.toFixed(2)}`;
+        let totalOrder = parseFloat(subTotal.innerHTML.replace('₹', '')) + 70;
+        const totalElement = document.getElementById("total_order");
+        if (totalElement) {
+            totalElement.innerHTML = `₹${totalOrder.toFixed(2)}`;
+        }
+    }
 }
-function checkOut(){
-    if(cart.length > 0){
-        // Check multiple authentication tokens
+
+function checkOut() {
+    if (cart.length > 0) {
+        // Check authentication
         let emailToken = localStorage.getItem("email");
         let sessionToken = localStorage.getItem("sessionToken");
         let userEmail = localStorage.getItem("userEmail");
@@ -195,11 +139,11 @@ function checkOut(){
         console.log('Auth check:', { emailToken, sessionToken, userEmail });
         
         // User is authenticated if they have either email token or session token
-        if(emailToken || sessionToken || userEmail){
+        if (emailToken || sessionToken || userEmail) {
             // Determine the current user email
             const currentUserEmail = userEmail || emailToken;
             
-            if(!currentUserEmail) {
+            if (!currentUserEmail) {
                 alert('Please login first to proceed with checkout.');
                 window.location.href = "login.html";
                 return;
@@ -211,19 +155,19 @@ function checkOut(){
             
             console.log('Customer data check:', { userSpecificKey, customerData });
             
-            if(customerData) {
+            if (customerData) {
                 try {
+                    // Validate customer data
                     const parsedData = JSON.parse(customerData);
-                    if(parsedData.name && parsedData.address && parsedData.phone){
-                        // Customer data is complete, proceed to checkout
-                        console.log('Proceeding to checkout with complete data');
+                    if (parsedData.name && parsedData.phone && parsedData.address) {
+                        // Set current customer data for checkout
+                        localStorage.setItem('currentCustomerData', customerData);
+                        localStorage.setItem('currentCustomerEmail', currentUserEmail);
                         window.location.href = "checkout.html";
                     } else {
-                        // Customer data incomplete, redirect to form
-                        console.log('Redirecting to form - incomplete data');
-                        window.location.href = `form.html?email=${encodeURIComponent(currentUserEmail)}`;
+                        throw new Error('Incomplete customer data');
                     }
-                } catch(e) {
+                } catch (e) {
                     console.error('Error parsing customer data:', e);
                     window.location.href = `form.html?email=${encodeURIComponent(currentUserEmail)}`;
                 }
@@ -232,15 +176,14 @@ function checkOut(){
                 console.log('Redirecting to form - no data');
                 window.location.href = `form.html?email=${encodeURIComponent(currentUserEmail)}`;
             }
-        }
-        else {
+        } else {
             // User not authenticated
             alert('Please login first to proceed with checkout.');
             window.location.href = "login.html";
         }
-     } else {
+    } else {
         alert('Your cart is empty. Please add some items first.');
-     }
+    }
 }
 
 // Enhanced order placement function
@@ -259,53 +202,31 @@ async function placeOrder() {
         window.location.href = 'login.html';
         return;
     }
-    
-    if (!customerData.name) {
+
+    if (!customerData.name || !customerData.email || !customerData.phone) {
         alert('Please complete your profile first.');
         window.location.href = 'form.html';
         return;
     }
-    
+
     if (cart.length === 0) {
         alert('Your cart is empty.');
         return;
     }
-    
+
     try {
-        // Calculate total
-        let total = 0;
-        const orderProducts = cart.map(product => {
-            const price = parseFloat(product.price.replace(/[$₹,]/g, ''));
-            const productTotal = price * product.quantity;
-            total += productTotal;
-            
-            return {
-                id: product.id,
-                name: product.name,
-                price: product.price,
-                quantity: product.quantity,
-                total: productTotal
-            };
-        });
-        
-        // Add shipping if applicable
-        const shipping = total > 500 ? 0 : 70;
-        const finalTotal = total + shipping;
-        
         const orderData = {
-            products: orderProducts,
-            totalAmount: finalTotal,
-            shipping: shipping,
-            subtotal: total
+            customerData,
+            items: cart,
+            total: cart.reduce((sum, item) => {
+                const price = parseFloat(item.price.replace(/[$₹,]/g, ''));
+                return sum + (price * item.quantity);
+            }, 0) + 70, // Adding shipping
+            orderDate: new Date().toISOString()
         };
-        
-        // Show loading state
-        const checkoutBtn = document.querySelector('.checkout');
-        if (checkoutBtn) {
-            checkoutBtn.disabled = true;
-            checkoutBtn.textContent = 'Placing Order...';
-        }
-        
+
+        console.log('Placing order:', orderData);
+
         const response = await fetch(`${apiBase}/place-order`, {
             method: 'POST',
             headers: {
@@ -314,34 +235,35 @@ async function placeOrder() {
             },
             body: JSON.stringify(orderData)
         });
-        
+
         const result = await response.json();
-        
+
         if (response.ok && result.success) {
             // Clear cart
             cart = [];
-            saveCart();
-            checkCart();
+            localStorage.setItem("cart", JSON.stringify(cart));
+            updateCartCount();
             
-            // Show success message
-            alert(`Order placed successfully! Order ID: #${result.orderId}\n\nYou will receive confirmation emails shortly.`);
+            // Store order confirmation
+            localStorage.setItem('lastOrderId', result.orderId);
+            localStorage.setItem('orderConfirmation', JSON.stringify({
+                orderId: result.orderId,
+                total: orderData.total,
+                date: orderData.orderDate
+            }));
             
-            // Redirect to products page
-            window.location.href = 'products.html';
-            
+            alert('Order placed successfully! Check your email for confirmation.');
+            window.location.href = 'orders.html';
         } else {
-            throw new Error(result.error || 'Failed to place order');
+            throw new Error(result.message || 'Failed to place order');
         }
-        
     } catch (error) {
-        console.error('Error placing order:', error);
-        alert('Failed to place order: ' + error.message);
-    } finally {
-        // Reset button state
-        const checkoutBtn = document.querySelector('.checkout');
-        if (checkoutBtn) {
-            checkoutBtn.disabled = false;
-            checkoutBtn.textContent = 'Place Order';
-        }
+        console.error('Order placement error:', error);
+        alert('Failed to place order. Please try again.');
     }
 }
+
+// Initialize cart count on page load
+document.addEventListener('DOMContentLoaded', () => {
+    updateCartCount();
+});

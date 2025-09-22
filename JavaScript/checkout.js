@@ -42,7 +42,7 @@ class CheckoutManager {
         // Check if current customer has filled the form
         if (!this.customerData.name || !this.customerEmail) {
             alert('Please complete your profile first.');
-            window.location.href = 'login.html';
+            window.location.href = 'form.html';
             return;
         }
 
