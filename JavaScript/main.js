@@ -75,6 +75,40 @@ function viewCart(){
     window.location.href = "cartPage.html"
 }
 
+// Add event listeners for checkout functionality
+document.addEventListener('DOMContentLoaded', function() {
+    // Fix checkout button functionality
+    const checkoutButtons = document.querySelectorAll('.checkout');
+    checkoutButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (typeof checkOut === 'function') {
+                checkOut();
+            } else {
+                // Fallback checkout functionality
+                window.location.href = 'checkout.html';
+            }
+        });
+    });
+    
+    // Fix navigation buttons in checkout warning
+    const backHomeBtn = document.getElementById('backHomeBtn');
+    if (backHomeBtn) {
+        backHomeBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.location.href = 'index.html';
+        });
+    }
+    
+    const continueShoppingBtn = document.getElementById('continueShoppingBtn');
+    if (continueShoppingBtn) {
+        continueShoppingBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.location.href = 'products.html';
+        });
+    }
+});
+
 function setupUI() {
     let logout = document.getElementById("display_login");
     let login = document.getElementById("login_btn");

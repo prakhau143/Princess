@@ -17,6 +17,57 @@ h2{
    grid-template-columns: repeat(2,1fr);
    gap: 100px;
 }
+
+/* Mobile Responsive for Cart Page */
+@media (max-width: 768px) {
+    .cart_page .container {
+        padding: 20px 15px;
+    }
+    
+    .cart_page .container h1 {
+        font-size: 28px;
+        margin-bottom: 30px;
+    }
+    
+    .cart_page .content {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+    
+    .apply_code {
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 40px;
+    }
+    
+    .apply_code #code {
+        width: 100%;
+        padding: 12px 15px;
+        font-size: 16px; /* Prevents zoom on iOS */
+    }
+    
+    .apply_code button {
+        width: 100%;
+        padding: 15px 20px;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .cart_page .container {
+        padding: 15px 10px;
+    }
+    
+    .cart_page .container h1 {
+        font-size: 24px;
+        margin-bottom: 25px;
+    }
+    
+    h2 {
+        font-size: 16px;
+        margin-bottom: 20px;
+    }
+}
 .apply_code{
     display: flex;
     width: 100%;

@@ -12,10 +12,22 @@ require('dotenv').config();
 
 const app = express();
 
-// Security middleware
-app.use(helmet());
+// Security middleware with CSP configuration
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://unpkg.com", "https://cdnjs.cloudflare.com"],
+            scriptSrcAttr: ["'unsafe-inline'"],
+            styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+            fontSrc: ["'self'", "https://fonts.gstatic.com"],
+            imgSrc: ["'self'", "data:", "https:"],
+            connectSrc: ["'self'", "https:"]
+        }
+    }
+}));
 app.use(cors({
-    origin: ['http://localhost:3002', 'http://127.0.0.1:5500', 'http://127.0.0.1:5501', 'http://127.0.0.1:5502'],
+    origin: ['http://localhost:3000', 'http://127.0.0.1:5500', 'http://127.0.0.1:5501', 'http://127.0.0.1:5502'],
     credentials: true
 }));
 app.use(express.json({ limit: '10mb' }));
@@ -103,16 +115,99 @@ function initializeDatabase() {
 }
 
 // Configure Gmail SMTP transporter
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: process.env.GMAIL_USER,
-        pass: process.env.GMAIL_APP_PASSWORD
+let transporter;
+try {
+    if (process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD) {
+        transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: process.env.GMAIL_USER,
+                pass: process.env.GMAIL_APP_PASSWORD
+            }
+        });
+        
+        // Verify SMTP connection
+        transporter.verify((error, success) => {
+            if (error) {
+                console.error('❌ SMTP connection failed:', error);
+                transporter = null;
+            } else {
+                console.log('✅ SMTP server is ready to send emails');
+                console.log(`📧 Email service configured with: ${process.env.GMAIL_USER}`);
+                console.log(`🛍️ Store name: ${process.env.STORE_NAME || 'Princess'}`);
+            }
+        });
+    } else {
+        console.log('⚠️ Gmail credentials not configured. OTP emails will be simulated.');
+        transporter = null;
     }
-});
+} catch (error) {
+    console.error('❌ Error configuring email transporter:', error);
+    transporter = null;
+}
 
 // Store for temporary sessions
 const sessionStore = new Map();
+
+// Debug endpoint to check session store
+app.get('/api/debug-sessions', (req, res) => {
+    const sessions = Array.from(sessionStore.entries()).map(([token, email]) => ({
+        token: token.substring(0, 20) + '...',
+        email: email
+    }));
+    res.json({ 
+        totalSessions: sessionStore.size,
+        sessions: sessions
+    });
+});
+
+// API endpoint to get customer orders
+app.get('/api/my-orders', (req, res) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({ error: 'No token provided' });
+    }
+
+    const token = authHeader.substring(7);
+    
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback-secret');
+        const userEmail = sessionStore.get(token);
+        
+        if (!userEmail) {
+            return res.status(401).json({ error: 'Invalid session' });
+        }
+
+        // Get customer ID from email
+        db.get('SELECT id FROM customers WHERE email = ?', [userEmail], (err, customer) => {
+            if (err) {
+                console.error('Database error:', err);
+                return res.status(500).json({ error: 'Database error' });
+            }
+
+            if (!customer) {
+                return res.json({ success: true, orders: [] });
+            }
+
+            // Get orders for this customer
+            db.all(
+                'SELECT * FROM orders WHERE customer_id = ? ORDER BY created_at DESC',
+                [customer.id],
+                (err, orders) => {
+                    if (err) {
+                        console.error('Database error:', err);
+                        return res.status(500).json({ error: 'Database error' });
+                    }
+
+                    res.json({ success: true, orders: orders || [] });
+                }
+            );
+        });
+    } catch (error) {
+        console.error('Token verification error:', error);
+        return res.status(401).json({ error: 'Invalid token' });
+    }
+});
 
 // Generate OTP
 function generateOTP() {
@@ -145,26 +240,33 @@ app.post('/api/send-otp', otpLimiter, [
         db.run('INSERT INTO otp_sessions (email, otp, expires_at) VALUES (?, ?, ?)', 
             [email, otp, expiresAt.toISOString()]);
 
-        // Send email
-        const mailOptions = {
-            from: `"${process.env.STORE_NAME || 'HiKraze'}" <${process.env.GMAIL_USER}>`,
-            to: email,
-            subject: 'Your Verification Code',
-            html: `
-                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                    <h2 style="color: #333;">Verification Code</h2>
-                    <p>Your verification code is:</p>
-                    <div style="background: #f5f5f5; padding: 20px; text-align: center; font-size: 24px; font-weight: bold; letter-spacing: 5px; margin: 20px 0;">
-                        ${otp}
+        // Send email or simulate
+        let emailResult;
+        if (transporter) {
+            const mailOptions = {
+                from: `"${process.env.STORE_NAME || 'Princess'}" <${process.env.GMAIL_USER}>`,
+                to: email,
+                subject: 'Your Verification Code',
+                html: `
+                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                        <h2 style="color: #333;">Verification Code</h2>
+                        <p>Your verification code is:</p>
+                        <div style="background: #f5f5f5; padding: 20px; text-align: center; font-size: 24px; font-weight: bold; letter-spacing: 5px; margin: 20px 0;">
+                            ${otp}
+                        </div>
+                        <p style="color: #666;">This code will expire in 5 minutes.</p>
+                        <p style="color: #666;">If you didn't request this code, please ignore this email.</p>
                     </div>
-                    <p style="color: #666;">This code will expire in 5 minutes.</p>
-                    <p style="color: #666;">If you didn't request this code, please ignore this email.</p>
-                </div>
-            `
-        };
-
-        const emailResult = await transporter.sendMail(mailOptions);
-        console.log('📧 Email sent successfully:', emailResult.messageId);
+                `
+            };
+            emailResult = await transporter.sendMail(mailOptions);
+            console.log('📧 Email sent successfully:', emailResult.messageId);
+        } else {
+            // Simulate email sending for testing
+            console.log('🧪 SIMULATED EMAIL - OTP Code:', otp);
+            console.log('📧 Would send to:', email);
+            emailResult = { messageId: 'simulated-' + Date.now() };
+        }
         
         res.json({ 
             success: true, 
@@ -224,7 +326,8 @@ app.post('/api/verify-otp', [
                 
                 // Generate session token
                 const sessionToken = generateSessionToken();
-                sessionStore.set(sessionToken, { email, verified: true, timestamp: Date.now() });
+                sessionStore.set(sessionToken, email);
+                console.log('✅ Session token created and stored for:', email);
 
                 res.json({ 
                     success: true, 
@@ -254,23 +357,47 @@ app.post('/api/verify-otp', [
 
 // Middleware to verify session
 function verifySession(req, res, next) {
-    const sessionToken = req.headers.authorization?.replace('Bearer ', '');
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        console.log('❌ No authorization header found');
+        return res.status(401).json({ error: 'Unauthorized - No token provided' });
+    }
+
+    const sessionToken = authHeader.substring(7);
+    console.log('🔍 Verifying session token:', sessionToken ? 'Present' : 'Missing');
     
     if (!sessionToken || !sessionStore.has(sessionToken)) {
-        return res.status(401).json({ error: 'Unauthorized' });
+        console.log('❌ Session token not found in store');
+        return res.status(401).json({ error: 'Unauthorized - Invalid session' });
     }
 
-    const session = sessionStore.get(sessionToken);
-    if (Date.now() - session.timestamp > 3600000) { // 1 hour
+    try {
+        // Verify JWT token
+        const decoded = jwt.verify(sessionToken, process.env.JWT_SECRET || 'fallback-secret');
+        const userEmail = sessionStore.get(sessionToken);
+        
+        if (!userEmail) {
+            console.log('❌ No email found for session token');
+            console.log('Available sessions in store:', Array.from(sessionStore.keys()).length);
+            return res.status(401).json({ error: 'Unauthorized - Session expired' });
+        }
+
+        console.log('✅ Session verified for user:', userEmail);
+        req.userEmail = userEmail;
+        next();
+    } catch (error) {
+        console.error('❌ JWT verification failed:', error.message);
         sessionStore.delete(sessionToken);
-        return res.status(401).json({ error: 'Session expired' });
+        return res.status(401).json({ error: 'Unauthorized - Invalid token' });
     }
-
-    req.userEmail = session.email;
-    next();
 }
 
-// Save customer details
+// Token verification endpoint
+app.get('/api/verify-token', verifySession, (req, res) => {
+    res.json({ success: true, email: req.userEmail });
+});
+
+// Customer details endpoint
 app.post('/api/customer-details', verifySession, [
     body('name').trim().isLength({ min: 2 }),
     body('phone').isMobilePhone(),
@@ -393,6 +520,15 @@ app.post('/api/place-order', verifySession, [
 
                     // Send order notification email to owner
                     try {
+                        if (!transporter) {
+                            console.log('⚠️ Email transporter not available. Emails will not be sent.');
+                            return res.json({ 
+                                success: true, 
+                                message: 'Order placed successfully! (Email service unavailable)',
+                                orderId: orderId
+                            });
+                        }
+
                         const orderEmailHtml = `
                             <div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto;">
                                 <h2 style="color: #333; border-bottom: 2px solid #007bff; padding-bottom: 10px;">
@@ -439,38 +575,81 @@ app.post('/api/place-order', verifySession, [
                         `;
 
                         const ownerMailOptions = {
-                            from: `"${process.env.STORE_NAME || 'HiKraze'}" <${process.env.GMAIL_USER}>`,
+                            from: `"${process.env.STORE_NAME || 'Princess'}" <${process.env.GMAIL_USER}>`,
                             to: process.env.OWNER_EMAIL || process.env.GMAIL_USER,
                             subject: `🛍️ New Order #${orderId} - ₹${totalAmount}`,
                             html: orderEmailHtml
                         };
 
+                        console.log('📧 Sending owner notification email...');
+                        console.log('Owner email details:', {
+                            to: process.env.OWNER_EMAIL || process.env.GMAIL_USER,
+                            subject: ownerMailOptions.subject
+                        });
                         await transporter.sendMail(ownerMailOptions);
+                        console.log('✅ Owner notification email sent successfully');
 
                         // Send confirmation email to customer
+                        console.log('📧 Sending customer confirmation email...');
+                        console.log('Customer email details:', {
+                            to: customer.email,
+                            subject: `Order Confirmation #${orderId}`
+                        });
                         const customerEmailHtml = `
-                            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                                <h2 style="color: #28a745;">✅ Order Confirmed!</h2>
-                                <p>Dear ${customer.name},</p>
-                                <p>Thank you for your order! We have received your order and will process it soon.</p>
-                                <div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0;">
-                                    <p><strong>Order ID:</strong> #${orderId}</p>
-                                    <p><strong>Total Amount:</strong> ₹${totalAmount}</p>
-                                    <p><strong>Order Date:</strong> ${new Date().toLocaleString('en-IN')}</p>
+                            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9;">
+                                <div style="background-color: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                                    <div style="text-align: center; margin-bottom: 30px;">
+                                        <h1 style="color: #27ae60; font-size: 2rem; margin: 0;">✅ Order Confirmed!</h1>
+                                        <p style="color: #7f8c8d; font-size: 1.1rem; margin: 10px 0 0 0;">Thank you for choosing Princess</p>
+                                    </div>
+                                    
+                                    <div style="background: linear-gradient(135deg, #e8f5e8 0%, #f0f8ff 100%); padding: 20px; border-radius: 10px; margin: 20px 0;">
+                                        <h3 style="color: #27ae60; margin-top: 0;">Dear ${customer.name},</h3>
+                                        <p style="color: #2c3e50; line-height: 1.6;">Your order has been successfully placed and confirmed! We're excited to prepare your items for delivery.</p>
+                                    </div>
+
+                                    <div style="background: #fff; border: 2px solid #27ae60; border-radius: 10px; padding: 20px; margin: 20px 0;">
+                                        <h3 style="color: #27ae60; margin-top: 0; text-align: center;">📋 Order Details</h3>
+                                        <table style="width: 100%; border-collapse: collapse;">
+                                            <tr><td style="padding: 10px 0; font-weight: bold; color: #2c3e50;">Order ID:</td><td style="padding: 10px 0; color: #8e44ad; font-weight: bold;">#${orderId}</td></tr>
+                                            <tr><td style="padding: 10px 0; font-weight: bold; color: #2c3e50;">Total Amount:</td><td style="padding: 10px 0; color: #27ae60; font-weight: bold; font-size: 1.2rem;">₹${totalAmount}</td></tr>
+                                            <tr><td style="padding: 10px 0; font-weight: bold; color: #2c3e50;">Order Date:</td><td style="padding: 10px 0; color: #2c3e50;">${new Date().toLocaleString('en-IN')}</td></tr>
+                                        </table>
+                                    </div>
+
+                                    <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0; border-radius: 5px;">
+                                        <h4 style="color: #856404; margin: 0 0 10px 0;">🚚 Delivery Information</h4>
+                                        <p style="color: #856404; margin: 0; line-height: 1.5;">
+                                            <strong>Our team will reach your door in 5-7 business days.</strong><br>
+                                            You will receive email updates about your order status and tracking information.
+                                        </p>
+                                    </div>
+
+                                    <div style="text-align: center; margin: 30px 0;">
+                                        <p style="color: #2c3e50; font-size: 1.1rem; margin: 0;">Thank you for shopping with Princess! 💎</p>
+                                        <p style="color: #7f8c8d; font-size: 0.9rem; margin: 10px 0 0 0;">
+                                            For any queries, feel free to contact our support team.
+                                        </p>
+                                    </div>
                                 </div>
-                                <p>We will contact you soon with shipping details.</p>
-                                <p>Thank you for shopping with us!</p>
+                                
+                                <div style="text-align: center; margin-top: 20px;">
+                                    <p style="color: #7f8c8d; font-size: 12px;">
+                                        This is an automated confirmation from ${process.env.STORE_NAME || 'Princess'}
+                                    </p>
+                                </div>
                             </div>
                         `;
 
                         const customerMailOptions = {
-                            from: `"${process.env.STORE_NAME || 'HiKraze'}" <${process.env.GMAIL_USER}>`,
+                            from: `"${process.env.STORE_NAME || 'Princess'}" <${process.env.GMAIL_USER}>`,
                             to: customer.email,
                             subject: `Order Confirmation #${orderId}`,
                             html: customerEmailHtml
                         };
 
                         await transporter.sendMail(customerMailOptions);
+                        console.log('✅ Customer confirmation email sent successfully');
 
                         res.json({ 
                             success: true, 
@@ -512,7 +691,7 @@ app.get('/api/health', (req, res) => {
     res.json({ 
         status: 'OK', 
         timestamp: new Date().toISOString(),
-        service: 'HiKraze Ecommerce API'
+        service: 'Princess Ecommerce API'
     });
 });
 
@@ -531,7 +710,7 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`🚀 Server is running on port ${PORT}`);
     console.log(`📧 Email service configured with: ${process.env.GMAIL_USER}`);
-    console.log(`🛍️ Store name: ${process.env.STORE_NAME || 'HiKraze'}`);
+    console.log(`🛍️ Store name: ${process.env.STORE_NAME || 'Princess'}`);
 });
 
 // Graceful shutdown

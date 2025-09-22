@@ -17,7 +17,65 @@
     <link rel="stylesheet" href="Style/checkout.css">
      <!-- animation icon -->
      <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.7.6/lottie.min.js"></script>
-     <title>HiKraze - Checkout</title>
+     <title>Princess - Checkout</title>
+    <!-- icon -->
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <!-- Force load ionicons -->
+    <script>
+        // Ensure ionicons are loaded
+        window.addEventListener('load', function() {
+            if (typeof customElements === 'undefined' || !customElements.get('ion-icon')) {
+                console.log('Loading ionicons fallback...');
+                const script = document.createElement('script');
+                script.src = 'https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js';
+                document.head.appendChild(script);
+            }
+        });
+    </script>
+    <!-- Fallback CSS icons -->
+    <style>
+        .fallback-icon {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            font-size: 20px;
+            text-align: center;
+            line-height: 24px;
+        }
+        .cart-icon::before { content: '🛒'; }
+        .user-icon::before { content: '👤'; }
+        .logout-icon::before { content: '🚪'; }
+        .instagram-icon::before { content: '📷'; }
+        .facebook-icon::before { content: '📘'; }
+    </style>
+    <!-- Force load ionicons with fallback -->
+    <script>
+        // Ensure ionicons are loaded with fallback
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                const ionIcons = document.querySelectorAll('ion-icon');
+                ionIcons.forEach(icon => {
+                    if (icon.offsetHeight === 0 || !icon.shadowRoot) {
+                        const iconName = icon.getAttribute('name');
+                        let fallbackClass = '';
+                        
+                        if (iconName.includes('cart')) fallbackClass = 'cart-icon';
+                        else if (iconName.includes('person')) fallbackClass = 'user-icon';
+                        else if (iconName.includes('log-out')) fallbackClass = 'logout-icon';
+                        else if (iconName.includes('instagram')) fallbackClass = 'instagram-icon';
+                        else if (iconName.includes('facebook')) fallbackClass = 'facebook-icon';
+                        
+                        if (fallbackClass) {
+                            const span = document.createElement('span');
+                            span.className = `fallback-icon ${fallbackClass}`;
+                            icon.parentNode.replaceChild(span, icon);
+                        }
+                    }
+                });
+            }, 2000);
+        });
+    </script>
 </head>
 <body>
     <div class="checkout" id="checkout-overlay">
@@ -27,7 +85,7 @@
                 <div class="brand-logo-section">
                     <div class="jewelry-icon">💎</div>
                     <div class="brand-text-section">
-                        <h2 class="brand-title">HiKraze Jewelry</h2>
+                        <h2 class="brand-title">Princess Jewelry</h2>
                         <p class="brand-subtitle">Exquisite Craftsmanship, Timeless Elegance</p>
                     </div>
                 </div>
@@ -48,8 +106,8 @@
                     <p><strong>Order Date:</strong> <span id="previousOrderDate">Today</span></p>
                 </div>
                 <div class="warning-actions">
-                    <button onclick="backHome()" class="home-btn">🏠 Go to Home</button>
-                    <button onclick="continueShopping()" class="continue-shopping-btn">✨ Continue Shopping</button>
+                    <button id="backHomeBtn" class="home-btn">🏠 Go to Home</button>
+                    <button id="continueShoppingBtn" class="continue-shopping-btn">✨ Continue Shopping</button>
                 </div>
             </div>
 
@@ -85,37 +143,13 @@
             
             <!-- Action Buttons -->
             <div class="checkout-actions">
-                <button id="placeOrderBtn" onclick="finalizeOrder();" class="place-order-btn">
+                <button id="placeOrderBtn" class="place-order-btn">
                     <span id="placeOrderText">💎 Place Order</span>
                     <div id="placeOrderSpinner" class="spinner" style="display: none;"></div>
                 </button>
-                <button id="back_btn" onclick="backToCart();" class="back-btn">← Back to Cart</button>
+                <button id="back_btn" class="back-btn">← Back to Cart</button>
             </div>
             
-            <!-- Demo Test Button (for testing without server) -->
-            <div style="text-align: center; margin-top: 15px;">
-                <button onclick="testOrderSuccess()" style="
-                    background: #28a745;
-                    color: white;
-                    border: none;
-                    padding: 8px 15px;
-                    border-radius: 15px;
-                    font-size: 0.8rem;
-                    cursor: pointer;
-                    opacity: 0.7;
-                    margin-right: 10px;
-                ">🧪 Test Order Success (Demo)</button>
-                <button onclick="debugCustomerData()" style="
-                    background: #17a2b8;
-                    color: white;
-                    border: none;
-                    padding: 8px 15px;
-                    border-radius: 15px;
-                    font-size: 0.8rem;
-                    cursor: pointer;
-                    opacity: 0.7;
-                ">🔍 Debug Customer Data</button>
-            </div>
             
             <!-- Order Success State (hidden initially) -->
             <div id="orderSuccess" class="order-success" style="display: none;">
@@ -124,7 +158,7 @@
                     <div class="sparkles">✨</div>
                 </div>
                 <h3 class="success-title">Order Placed Successfully!</h3>
-                <p class="success-message">Thank you for choosing HiKraze Jewelry</p>
+                <p class="success-message">Thank you for choosing Princess Jewelry</p>
                 
                 <div class="order-confirmation-card">
                     <div class="confirmation-header">
@@ -162,6 +196,9 @@
                 <div class="success-actions">
                     <button onclick="continueShopping()" class="continue-shopping-btn">
                         ✨ Continue Shopping
+                    </button>
+                    <button onclick="window.location.href='orders.html'" class="view-orders-btn">
+                        📋 View My Orders
                     </button>
                     <button onclick="backHome()" class="home-btn">
                         🏠 Go to Home
@@ -765,6 +802,24 @@
             box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
         }
         
+        .view-orders-btn {
+            background: #8e44ad;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+        
+        .view-orders-btn:hover {
+            background: #ecf0f1;
+            border-color: #95a5a6;
+        }
+        
         .home-btn {
             background: transparent;
             color: #2c3e50;
@@ -1227,6 +1282,7 @@
         }
     </script>
     
+    <script src="fix-all-icons.js"></script>
     <script src="JavaScript/checkout.js"></script>
 </body>
 </html>

@@ -5,7 +5,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 50px;
+    padding: 50px 20px;
     background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
     animation: gradientBG 15s ease infinite;
 }
@@ -23,12 +23,61 @@
 }
 
 #login .container{
-    width: 500px;
+    width: 100%;
+    max-width: 500px;
     padding: 40px;
     background: white;
     border-radius: 20px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     animation: slideUp 0.5s ease-out;
+}
+
+/* Mobile Responsive for Login */
+@media (max-width: 768px) {
+    #login {
+        padding: 20px 15px;
+        min-height: 100vh;
+    }
+    
+    #login .container {
+        padding: 30px 20px;
+        border-radius: 15px;
+        margin: 10px;
+    }
+    
+    .section-header h1 {
+        font-size: 1.5rem;
+    }
+    
+    .form-control {
+        padding: 12px 15px;
+        font-size: 16px; /* Prevents zoom on iOS */
+    }
+    
+    .btn {
+        padding: 12px 20px;
+        font-size: 1rem;
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    #login {
+        padding: 15px 10px;
+    }
+    
+    #login .container {
+        padding: 25px 15px;
+        margin: 5px;
+    }
+    
+    .section-header h1 {
+        font-size: 1.3rem;
+    }
+    
+    .form-control {
+        padding: 10px 12px;
+    }
 }
 
 @keyframes slideUp {

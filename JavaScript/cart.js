@@ -77,7 +77,7 @@ function addToCart(productId,inputQuantity = 1) {
 function addCartToHTML() {
     let content = ``;
     cart.forEach((product, index) => {
-        let price = parseFloat(product.price.replace('$', ''));
+        let price = parseFloat(product.price.replace(/[$₹,]/g, ''));
         let totalPrice = price * product.quantity;
         content += `
         <div class="cart_product">
@@ -101,7 +101,7 @@ function addCartToHTML() {
                             class="product_count"  value=${product.quantity}>
                         <button  class="counts_btns plus" onclick="increaseQuantity(${index})">+</button>
                     </div>
-                    <span class="total_price">$${totalPrice}.00</span>
+                    <span class="total_price">₹${totalPrice.toFixed(2)}</span>
                 </div>
             </div>
         </div>`;
@@ -133,10 +133,10 @@ function decreaseQuantity(index) {
 
 function updateTotalPrice() {
     let total = cart.reduce((sum, product) => {
-        let price = parseFloat(product.price.replace('$', ''));
+        let price = parseFloat(product.price.replace(/[$₹,]/g, ''));
         return sum + (price * product.quantity);
     }, 0);
-    totalPrice.innerHTML = `$${total.toFixed(2)}`;
+    totalPrice.innerHTML = `₹${total.toFixed(2)}`;
     localStorage.setItem("total price" , total + 70);
     return total;
 }
@@ -170,8 +170,8 @@ function checkCartPage(total,totalQuantity){
     if (window.location.pathname.includes("cartPage.html")) {
         if (cart.length == 0) {
             cartItemsCount.innerHTML = `(0 items)`;
-            document.getElementById("Subtotal").innerHTML = `$0.00`;
-            document.getElementById("total_order").innerHTML = `$0.00`;
+            document.getElementById("Subtotal").innerHTML = `₹0.00`;
+            document.getElementById("total_order").innerHTML = `₹0.00`;
         }
         else{
             cartItemsCount.innerHTML = `(${totalQuantity} items)`;
@@ -181,28 +181,61 @@ function checkCartPage(total,totalQuantity){
 }
 function displayInCartPage(total){
     let subTotal = document.getElementById("Subtotal");
-    subTotal.innerHTML = `$${total.toFixed(2)}`;
-    let totalOrder= parseFloat(subTotal.innerHTML.replace('$', '')) + 70;
-    document.getElementById("total_order").innerHTML = `$${totalOrder.toFixed(2)}`;
+    subTotal.innerHTML = `₹${total.toFixed(2)}`;
+    let totalOrder= parseFloat(subTotal.innerHTML.replace('₹', '')) + 70;
+    document.getElementById("total_order").innerHTML = `₹${totalOrder.toFixed(2)}`;
 }
 function checkOut(){
-    let sessionToken = localStorage.getItem('sessionToken');
-    let userEmail = localStorage.getItem('userEmail');
-    let customerData = localStorage.getItem('customerData');
-    
-    if (cart.length != 0) {
-        if(sessionToken && userEmail){
-            if(customerData){
-                // User is authenticated and has filled details, proceed to checkout
-                window.location.href = "checkout.html";
+    if(cart.length > 0){
+        // Check multiple authentication tokens
+        let emailToken = localStorage.getItem("email");
+        let sessionToken = localStorage.getItem("sessionToken");
+        let userEmail = localStorage.getItem("userEmail");
+        
+        console.log('Auth check:', { emailToken, sessionToken, userEmail });
+        
+        // User is authenticated if they have either email token or session token
+        if(emailToken || sessionToken || userEmail){
+            // Determine the current user email
+            const currentUserEmail = userEmail || emailToken;
+            
+            if(!currentUserEmail) {
+                alert('Please login first to proceed with checkout.');
+                window.location.href = "login.html";
+                return;
+            }
+            
+            // Check if customer data exists for current user
+            const userSpecificKey = `customerData_${currentUserEmail}`;
+            let customerData = localStorage.getItem(userSpecificKey) || localStorage.getItem("customerData");
+            
+            console.log('Customer data check:', { userSpecificKey, customerData });
+            
+            if(customerData) {
+                try {
+                    const parsedData = JSON.parse(customerData);
+                    if(parsedData.name && parsedData.address && parsedData.phone){
+                        // Customer data is complete, proceed to checkout
+                        console.log('Proceeding to checkout with complete data');
+                        window.location.href = "checkout.html";
+                    } else {
+                        // Customer data incomplete, redirect to form
+                        console.log('Redirecting to form - incomplete data');
+                        window.location.href = `form.html?email=${encodeURIComponent(currentUserEmail)}`;
+                    }
+                } catch(e) {
+                    console.error('Error parsing customer data:', e);
+                    window.location.href = `form.html?email=${encodeURIComponent(currentUserEmail)}`;
+                }
             } else {
-                // User is authenticated but hasn't filled details
-                alert('Please complete your profile first.');
-                window.location.href = "form.html";
+                // No customer data, redirect to form
+                console.log('Redirecting to form - no data');
+                window.location.href = `form.html?email=${encodeURIComponent(currentUserEmail)}`;
             }
         }
         else {
             // User not authenticated
+            alert('Please login first to proceed with checkout.');
             window.location.href = "login.html";
         }
      } else {
@@ -215,7 +248,7 @@ async function placeOrder() {
     // Detect API base URL
     const currentPort = window.location.port;
     const apiBase = (currentPort === '5500' || currentPort === '5501' || currentPort === '5502') 
-        ? 'http://localhost:3002/api' 
+        ? 'http://localhost:3000/api' 
         : '/api';
     
     const sessionToken = localStorage.getItem('sessionToken');

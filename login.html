@@ -7,7 +7,7 @@
     women and men at SA FashionStyle. Shop our wide selection of clothes, bags,
     jewelry, and more. Elevate your style with our curated collections.">
     <meta name="keywords" content="clothes, women, men, fashion, bags, jewelry, SA FashionStyle, latest trends, stylish clothing, accessories">
-    <meta name="author" content="HiKraze">
+    <meta name="author" content="Princess">
     <link rel="icon" href="images/logowhite.jpeg" type="image/x-icon">
     <!-- css -->
     <link rel="stylesheet" href="Style/login.css">
@@ -16,14 +16,72 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
+    
+    
+    
+    <title>Princess - Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="JavaScript/smtp-otp.js"></script>
+    <script src="JavaScript/main.js"></script>
+    <script src="JavaScript/cart.js"></script>
     <!-- icon -->
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
-    <title>HiKraze - Login</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script defer src="JavaScript/smtp-otp.js"></script>
-    <script src="JavaScript/main.js"></script>
-    <script src="JavaScript/cart.js"></script>
+    <!-- Force load ionicons -->
+    <script>
+        // Ensure ionicons are loaded
+        window.addEventListener('load', function() {
+            if (typeof customElements === 'undefined' || !customElements.get('ion-icon')) {
+                console.log('Loading ionicons fallback...');
+                const script = document.createElement('script');
+                script.src = 'https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js';
+                document.head.appendChild(script);
+            }
+        });
+    </script>
+    <!-- Fallback CSS icons -->
+    <style>
+        .fallback-icon {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            font-size: 20px;
+            text-align: center;
+            line-height: 24px;
+        }
+        .cart-icon::before { content: '🛒'; }
+        .user-icon::before { content: '👤'; }
+        .logout-icon::before { content: '🚪'; }
+        .instagram-icon::before { content: '📷'; }
+        .facebook-icon::before { content: '📘'; }
+    </style>
+    <!-- Force load ionicons with fallback -->
+    <script>
+        // Ensure ionicons are loaded with fallback
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                const ionIcons = document.querySelectorAll('ion-icon');
+                ionIcons.forEach(icon => {
+                    if (icon.offsetHeight === 0 || !icon.shadowRoot) {
+                        const iconName = icon.getAttribute('name');
+                        let fallbackClass = '';
+                        
+                        if (iconName.includes('cart')) fallbackClass = 'cart-icon';
+                        else if (iconName.includes('person')) fallbackClass = 'user-icon';
+                        else if (iconName.includes('log-out')) fallbackClass = 'logout-icon';
+                        else if (iconName.includes('instagram')) fallbackClass = 'instagram-icon';
+                        else if (iconName.includes('facebook')) fallbackClass = 'facebook-icon';
+                        
+                        if (fallbackClass) {
+                            const span = document.createElement('span');
+                            span.className = `fallback-icon ${fallbackClass}`;
+                            icon.parentNode.replaceChild(span, icon);
+                        }
+                    }
+                });
+            }, 2000);
+        });
+    </script>
 </head>
 
 <body>
@@ -40,7 +98,7 @@
                     <ion-icon name="logo-whatsapp"></ion-icon>
                 </a>
               </div>
-              <img src="images/logo_block.jpeg" alt="HiKraze logo" id="logo">
+              <img src="images/logo_block.jpeg" alt="Princess logo" id="logo">
               <div class="header_actions">
                 <div id="display_login">
                   <span id="user_name">Prakhar</span>
@@ -86,11 +144,6 @@
                 <span id="invalidEmail" class="alert alert-error">Please enter a valid email address</span>
             </div>
 
-            <!-- Temporary: Manual OTP section trigger -->
-            <div style="text-align: center; margin: 10px 0;">
-                <small style="color: #666;">If you received OTP but don't see the input field:</small><br>
-                <button type="button" onclick="window.smtpAuth?.showOTPSection()" style="background: #28a745; color: white; padding: 5px 15px; border: none; border-radius: 5px; margin-top: 5px; font-size: 12px;">Show OTP Input</button>
-            </div>
 
             <div id="otpSection" style="display: none;">
                 <div class="form-group">
@@ -156,8 +209,8 @@
         </div>
        <div class="footer-bottom">
            <p class="footer-company-name">
-              © 2025 All Copyright are reserved by HiKraze  <ion-icon name="heart"></ion-icon>
-                by <a href="https://www.upwork.com/freelancers/~01a11a163a8ee98a35" target="_blank" id="author">HK</a>
+              © 2025 All Copyright are reserved by Princess  <ion-icon name="heart"></ion-icon>
+                by <a href="https://www.upwork.com/freelancers/~01a11a163a8ee98a35" target="_blank" id="author">Princess</a>
            </p>
        </div>
        <div class="cart_products">
@@ -175,7 +228,7 @@
    <footer class="footer black-footer">
        <div class="footer-top">
           <div class="footer-logo">
-              <img src="images/logo_block.jpeg" alt="HiKraze logo" width="140">
+              <img src="images/logo_block.jpeg" alt="Princess logo" width="140">
               <p>The customer is at the heart of our unique business model, which includes design.</p>
           </div>
           <div class="footer-list">
@@ -202,10 +255,11 @@
        </div>
       <div class="footer-bottom">
           <p class="footer-company-name">
-              © 2025 All Copyright are reserved by HiKraze<ion-icon name="heart"></ion-icon>
-               by <a href="https://www.upwork.com/freelancers/~01a11a163a8ee98a35" target="_blank" id="author">HK</a>
+              © 2025 All Copyright are reserved by Princess<ion-icon name="heart"></ion-icon>
+               by <a href="https://www.upwork.com/freelancers/~01a11a163a8ee98a35" target="_blank" id="author">Princess</a>
           </p>
       </div>
    </footer>
+    <script src="fix-all-icons.js"></script>
 </body>
 </html>

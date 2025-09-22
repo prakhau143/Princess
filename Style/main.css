@@ -85,6 +85,68 @@ main{
     padding: 24px 8%;
     height: 90px;
 }
+
+/* Mobile Responsive for Header and Main Layout */
+@media (max-width: 768px) {
+    .header_top {
+        padding: 15px 20px;
+        height: 70px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .header_top img {
+        width: 80px;
+    }
+    
+    .header_top ion-icon {
+        font-size: 20px;
+        margin-right: 6px;
+    }
+    
+    #scrollBtn {
+        bottom: 20px;
+        right: 20px;
+        height: 45px;
+        width: 45px;
+    }
+    
+    #scrollBtn #btn-up {
+        font-size: 18px;
+        padding-top: 2px;
+    }
+    
+    main {
+        margin-top: 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .header_top {
+        padding: 10px 15px;
+        height: 60px;
+    }
+    
+    .header_top img {
+        width: 70px;
+    }
+    
+    .header_top ion-icon {
+        font-size: 18px;
+        margin-right: 4px;
+    }
+    
+    #scrollBtn {
+        bottom: 15px;
+        right: 15px;
+        height: 40px;
+        width: 40px;
+    }
+    
+    #scrollBtn #btn-up {
+        font-size: 16px;
+    }
+}
 .header_top ion-icon{
     font-size: 24px;
     color: rgba(0, 0, 0, 0.886);

@@ -4,7 +4,7 @@ class CustomerDetailsForm {
         // Detect if we're running on Live Server and use correct API base
         const currentPort = window.location.port;
         if (currentPort === '5500' || currentPort === '5501' || currentPort === '5502') {
-            this.apiBase = 'http://localhost:3002/api';
+            this.apiBase = 'http://localhost:3000/api';
         } else {
             this.apiBase = '/api';
         }
@@ -21,6 +21,14 @@ class CustomerDetailsForm {
     }
 
     initializeForm() {
+        // Form elements - initialize first
+        this.form = document.getElementById('userDetailsForm');
+        this.submitBtn = document.getElementById('submitBtn');
+        this.submitText = document.getElementById('submitText');
+        this.submitSpinner = document.getElementById('submitSpinner');
+        this.formSuccess = document.getElementById('formSuccess');
+        this.formError = document.getElementById('formError');
+
         // Set email field
         const emailField = document.getElementById('email');
         if (emailField) {
@@ -29,21 +37,40 @@ class CustomerDetailsForm {
 
         // Check authentication
         if (!this.sessionToken || !this.userEmail) {
-            alert('Session expired. Please login again.');
+            console.log('No session token or email found, redirecting to login');
             window.location.href = 'login.html';
             return;
         }
+        
+        // Verify token is still valid
+        this.verifyToken();
 
-        // Check if this customer has already filled the form
-        this.checkExistingCustomerData();
-
-        // Form elements
-        this.form = document.getElementById('userDetailsForm');
-        this.submitBtn = document.getElementById('submitBtn');
-        this.submitText = document.getElementById('submitText');
-        this.submitSpinner = document.getElementById('submitSpinner');
-        this.formSuccess = document.getElementById('formSuccess');
-        this.formError = document.getElementById('formError');
+        // Check if this customer has already filled the form (only if form exists)
+        if (this.form) {
+            this.checkExistingCustomerData();
+        }
+    }
+    
+    async verifyToken() {
+        try {
+            const response = await fetch(`${this.apiBase}/verify-token`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${this.sessionToken}`
+                }
+            });
+            
+            if (!response.ok) {
+                console.log('Token invalid, redirecting to login');
+                localStorage.removeItem('sessionToken');
+                localStorage.removeItem('userEmail');
+                window.location.href = 'login.html';
+                return;
+            }
+        } catch (error) {
+            console.error('Token verification failed:', error);
+            // Continue anyway - might be network issue
+        }
     }
 
     checkExistingCustomerData() {
@@ -112,11 +139,19 @@ class CustomerDetailsForm {
                 </div>
             `;
             
-            // Insert before the form
-            this.form.parentNode.insertBefore(existingCustomerDiv, this.form);
+            // Insert before the form (with safety check)
+            if (this.form && this.form.parentNode) {
+                this.form.parentNode.insertBefore(existingCustomerDiv, this.form);
+            } else {
+                // Fallback: append to body or a container
+                const container = document.querySelector('.form-container') || document.body;
+                container.appendChild(existingCustomerDiv);
+            }
             
-            // Hide the form initially
-            this.form.style.display = 'none';
+            // Hide the form initially (with safety check)
+            if (this.form) {
+                this.form.style.display = 'none';
+            }
             
             return true;
         }
@@ -236,6 +271,7 @@ class CustomerDetailsForm {
                 pincode: document.getElementById('pincode').value.trim()
             };
 
+            console.log('Submitting with token:', this.sessionToken);
             const response = await fetch(`${this.apiBase}/customer-details`, {
                 method: 'POST',
                 headers: {
@@ -244,6 +280,16 @@ class CustomerDetailsForm {
                 },
                 body: JSON.stringify(formData)
             });
+            
+            console.log('Response status:', response.status);
+            
+            if (response.status === 401) {
+                console.log('Token expired, redirecting to login');
+                localStorage.removeItem('sessionToken');
+                localStorage.removeItem('userEmail');
+                window.location.href = 'login.html';
+                return;
+            }
 
             const data = await response.json();
 

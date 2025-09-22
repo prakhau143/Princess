@@ -5,10 +5,10 @@
     <meta name="fast2sms" content="gwQ1R98gw2a2MuuTWuEuODFVaLpUXcrZ">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Discover the latest trends in fashion for 
-    women and men at HiKraze. Shop our wide selection of clothes, bags,
+    women and men at Princess. Shop our wide selection of clothes, bags,
     jewelry, and more. Elevate your style with our curated collections.">
-    <meta name="keywords" content="clothes, women, men, fashion, bags, jewelry, HiKraze, latest trends, stylish clothing, accessories">
-    <meta name="author" content="HiKraze">
+    <meta name="keywords" content="clothes, women, men, fashion, bags, jewelry, Princess, latest trends, stylish clothing, accessories">
+    <meta name="author" content="Princess">
     <link rel="icon" href="images/logowhite.jpeg" type="image/x-icon">
     <!-- css -->
     <link rel="stylesheet" href="Style/style.css">
@@ -17,10 +17,69 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
+    
+    
+    
+    <!-- Force load ionicons -->
+    <script>
+        // Ensure ionicons are loaded
+        window.addEventListener('load', function() {
+            if (typeof customElements === 'undefined' || !customElements.get('ion-icon')) {
+                console.log('Loading ionicons fallback...');
+                const script = document.createElement('script');
+                script.src = 'https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js';
+                document.head.appendChild(script);
+            }
+        });
+    </script>
+    <title>Princess</title>
     <!-- icon -->
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
-    <title>HiKraze</title>
+    
+    <!-- Fallback CSS icons -->
+    <style>
+        .fallback-icon {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            font-size: 20px;
+            text-align: center;
+            line-height: 24px;
+        }
+        .cart-icon::before { content: '🛒'; }
+        .user-icon::before { content: '👤'; }
+        .logout-icon::before { content: '🚪'; }
+        .instagram-icon::before { content: '📷'; }
+        .facebook-icon::before { content: '📘'; }
+    </style>
+    <!-- Force load ionicons with fallback -->
+    <script>
+        // Ensure ionicons are loaded with fallback
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                const ionIcons = document.querySelectorAll('ion-icon');
+                ionIcons.forEach(icon => {
+                    if (icon.offsetHeight === 0 || !icon.shadowRoot) {
+                        const iconName = icon.getAttribute('name');
+                        let fallbackClass = '';
+                        
+                        if (iconName.includes('cart')) fallbackClass = 'cart-icon';
+                        else if (iconName.includes('person')) fallbackClass = 'user-icon';
+                        else if (iconName.includes('log-out')) fallbackClass = 'logout-icon';
+                        else if (iconName.includes('instagram')) fallbackClass = 'instagram-icon';
+                        else if (iconName.includes('facebook')) fallbackClass = 'facebook-icon';
+                        
+                        if (fallbackClass) {
+                            const span = document.createElement('span');
+                            span.className = `fallback-icon ${fallbackClass}`;
+                            icon.parentNode.replaceChild(span, icon);
+                        }
+                    }
+                });
+            }, 2000);
+        });
+    </script>
 </head>
 <body>
     <header class="container" id="header">
@@ -36,7 +95,7 @@
                     <ion-icon name="logo-whatsapp"></ion-icon>
                 </a>
               </div>
-              <img src="images/logo_block.jpeg" alt="HiKraze logo" id="logo">
+              <img src="images/logo_block.jpeg" alt="Princess logo" id="logo">
               <div class="header_actions">
                    <div id="display_login">
                      <a href="#" id="logout" onclick="logout();">
@@ -257,7 +316,7 @@
     <footer class="footer">
          <div class="footer-top">
             <div class="footer-logo">
-                <img src="images/logo_block.jpeg" alt="HiKraze logo" width="140">
+                <img src="images/logo_block.jpeg" alt="Princess logo" width="140">
                 <p>The customer is at the heart of our unique business model, which includes design.</p>
             </div>
             <div class="footer-list">
@@ -284,7 +343,7 @@
          </div>
         <div class="footer-bottom">
             <p class="footer-company-name">
-                © 2025 All Copyright are reserved by HiKraze 
+                © 2025 All Copyright are reserved by Princess 
             </p>
         </div>
     </footer>
@@ -604,6 +663,7 @@
         document.addEventListener('DOMContentLoaded', checkOrderConfirmation);
     </script>
 
+    <script src="fix-all-icons.js"></script>
     <script src="JavaScript/index.js"></script>
     <script src="JavaScript/main.js"></script>
     <script src="JavaScript/cart.js"></script>

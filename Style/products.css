@@ -9,6 +9,59 @@ main{
     align-items: center;
     border-radius: 5px;
 }
+
+/* Mobile Responsive for Products Page */
+@media (max-width: 768px) {
+    main {
+        padding: 20px 15px;
+    }
+    
+    .product-header {
+        padding: 15px 20px;
+        flex-direction: column;
+        gap: 15px;
+        align-items: stretch;
+    }
+    
+    .product-header-right {
+        justify-content: space-between;
+    }
+    
+    .aside {
+        position: static;
+        width: 100%;
+        margin-bottom: 20px;
+    }
+    
+    .products-grid {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    main {
+        padding: 15px 10px;
+    }
+    
+    .product-header {
+        padding: 10px 15px;
+    }
+    
+    .product-header-right span {
+        font-size: 12px;
+    }
+    
+    .product-header-right #sort {
+        font-size: 12px;
+        padding: 8px;
+    }
+    
+    .products-grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+    }
+}
 .product-header .menu-icon{
     display: flex;
     align-items: center;

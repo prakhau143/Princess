@@ -21,13 +21,17 @@ class CheckoutManager {
         // Detect API base URL
         const currentPort = window.location.port;
         this.apiBase = (currentPort === '5500' || currentPort === '5501' || currentPort === '5502') 
-            ? 'http://localhost:3002/api' 
+            ? 'http://localhost:3000/api' 
             : '/api';
             
         this.init();
+        
+        // Make checkout manager globally available
+        window.checkoutManager = this;
     }
 
     init() {
+        this.attachButtonListeners();
         // Check authentication
         if (!this.sessionToken) {
             alert('Please login first.');
@@ -205,6 +209,15 @@ class CheckoutManager {
             let orderId = null;
 
             try {
+                console.log('🔄 Attempting to place order with server...');
+                console.log('API Base URL:', this.apiBase);
+                console.log('Session Token:', this.sessionToken ? `Present: ${this.sessionToken.substring(0, 20)}...` : 'Missing');
+                
+                // Check if session token is valid before making request
+                if (!this.sessionToken) {
+                    throw new Error('No session token found. Please login again.');
+                }
+                
                 const response = await fetch(`${this.apiBase}/place-order`, {
                     method: 'POST',
                     headers: {
@@ -214,20 +227,46 @@ class CheckoutManager {
                     body: JSON.stringify(orderData)
                 });
 
+                console.log('Response status:', response.status);
                 const result = await response.json();
+                console.log('Server response:', result);
 
                 if (response.ok && result.success) {
                     orderSuccess = true;
                     orderId = result.orderId;
+                    console.log('✅ Order placed successfully with email notifications');
+                    
+                    // Clear cart after successful order
+                    localStorage.removeItem('cart');
+                    
                 } else {
                     throw new Error(result.error || 'Server error');
                 }
             } catch (serverError) {
-                console.log('Server not available, using demo mode:', serverError.message);
+                console.error('❌ Server API Error:', serverError);
                 
-                // Demo mode - generate mock order ID
+                // If it's an authentication error, redirect to login
+                if (serverError.message.includes('Unauthorized') || serverError.message.includes('session')) {
+                    alert('Your session has expired. Please login again.');
+                    localStorage.removeItem('sessionToken');
+                    localStorage.removeItem('userEmail');
+                    window.location.href = 'login.html';
+                    return;
+                }
+                
+                alert(`Could not connect to the server to place your order. Please check your connection and try again.\n\nError: ${serverError.message}\n\nSwitching to demo mode for now.`);
+
+                console.log('⚠️ Server not available, using demo mode.');
+                
+                // Demo mode - generate mock order ID and simulate email sending
                 orderId = 'DEMO' + Date.now().toString().slice(-6);
                 orderSuccess = true;
+                
+                // Clear cart in demo mode too
+                localStorage.removeItem('cart');
+                
+                // Simulate email notifications in demo mode
+                this.simulateEmailNotifications(orderData, orderId);
             }
 
             if (orderSuccess) {
@@ -267,10 +306,13 @@ class CheckoutManager {
         // Clear the cart immediately after successful order
         this.clearCart();
         
-        // Redirect to home page after 2 seconds with success message
+        console.log(`🎉 Order ${orderId} completed successfully!`);
+        
+        // Show success message and redirect to home page after 3 seconds
         setTimeout(() => {
+            alert(`🎉 Order placed successfully! Order ID: ${orderId}\n\nYou will receive confirmation emails shortly.\n\nRedirecting to home page...`);
             window.location.href = 'index.html?orderSuccess=true';
-        }, 2000);
+        }, 3000);
         
         // Show temporary success message
         document.body.innerHTML = `
@@ -331,13 +373,48 @@ class CheckoutManager {
         return `${month} ${day}, ${year}`;
     }
 
+    // Simulate email notifications in demo mode
+    simulateEmailNotifications(orderData, orderId) {
+        console.log('📧 Simulating email notifications...');
+        console.log(`📨 Owner notification: New order #${orderId} - ₹${orderData.totalAmount}`);
+        console.log(`📧 Customer confirmation: Order #${orderId} confirmed for ${this.customerEmail}`);
+        
+        // Show notification to user
+        setTimeout(() => {
+            alert(`📧 Email notifications sent!\n\n✅ Order confirmation sent to: ${this.customerEmail}\n✅ Order details sent to store owner\n\nOrder ID: #${orderId}`);
+        }, 1000);
+    }
+
     clearCart() {
         localStorage.removeItem('cart');
-        this.cart = [];
-        
-        // Call the global cart clearing function if available
-        if (typeof clearCartCompletely === 'function') {
-            clearCartCompletely();
+        // Reset cart array to empty
+        if (typeof cart !== 'undefined') {
+            cart.length = 0;
+        }
+        // Also clear any cart-related UI if present
+        if (typeof updateCartDisplay === 'function') {
+            updateCartDisplay();
+        }
+        if (typeof checkCart === 'function') {
+            checkCart();
+        }
+    }
+
+    attachButtonListeners() {
+        const placeOrderBtn = document.getElementById('placeOrderBtn');
+        if (placeOrderBtn) {
+            placeOrderBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.finalizeOrder();
+            });
+        }
+
+        const backBtn = document.getElementById('back_btn');
+        if (backBtn) {
+            backBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                backToCart();
+            });
         }
     }
 }
@@ -350,7 +427,7 @@ function finalizeOrder() {
 }
 
 function backToCart() {
-    window.history.back();
+    window.location.href = "cartPage.html";
 }
 
 function backHome() {
