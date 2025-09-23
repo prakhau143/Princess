@@ -5,9 +5,14 @@ let products = [];
 async function loadProducts() {
     try {
         const response = await fetch('./json/products.json');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
         products = await response.json();
+        console.log('✅ Products loaded successfully:', products.length, 'items');
     } catch (error) {
-        console.error('Error loading products:', error);
+        console.error('❌ Error loading products:', error);
+        // Fallback: Show error message or continue without products
     }
 }
 
@@ -15,11 +20,15 @@ async function loadProducts() {
 document.addEventListener('DOMContentLoaded', async () => {
     await loadProducts();
     displayCart();
+    updateCartCount(); // Ensure counter is updated on page load
 });
 
 function addToCart(productId) {
     const product = products.find(p => p.id === productId);
-    if (!product) return;
+    if (!product) {
+        console.error('Product not found:', productId);
+        return;
+    }
 
     const existingItem = cart.find(item => item.id === productId);
     if (existingItem) {
@@ -35,8 +44,9 @@ function addToCart(productId) {
     }
     
     localStorage.setItem("cart", JSON.stringify(cart));
-    updateCartCount();
-    displayCart();
+    updateCartCount(); // Update counter immediately
+    displayCart(); // Update display
+    console.log('✅ Item added to cart:', product.name, 'Cart count:', cart.reduce((total, item) => total + item.quantity, 0));
 }
 
 function removeFromCart(productId) {
@@ -61,16 +71,47 @@ function updateQuantity(productId, newQuantity) {
 
 function updateCartCount() {
     const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
-    const cartCountElements = document.querySelectorAll('.cart-count');
+
+    // Update cart counter in header (all pages)
+    const cartCountElements = document.querySelectorAll('#cart-counter, .cart-count');
     cartCountElements.forEach(element => {
         element.textContent = cartCount;
+
+        // Show/hide counter based on cart contents
+        if (cartCount > 0) {
+            element.style.display = 'block';
+            element.style.opacity = '1';
+        } else {
+            element.style.display = 'none';
+        }
     });
+
+    // Update cart count display in cart page
+    const cartCountsElement = document.getElementById('cart_counts');
+    if (cartCountsElement) {
+        cartCountsElement.textContent = cartCount > 0 ? `(${cartCount})` : '';
+    }
+
+    console.log('Cart counter updated:', cartCount);
 }
 
 function displayCart() {
-    const cartContainer = document.getElementById("cart-container");
-    if (!cartContainer) return;
+    // Display in main cart page
+    const cartContainer = document.querySelector(".cart_page .cart_products");
+    if (cartContainer) {
+        displayMainCart(cartContainer);
+    }
+    
+    // Display in popup cart
+    const popupCartContainer = document.querySelector(".cart-section .cart_products");
+    if (popupCartContainer) {
+        displayPopupCart(popupCartContainer);
+    }
+    
+    updateCartCount();
+}
 
+function displayMainCart(cartContainer) {
     if (cart.length === 0) {
         cartContainer.innerHTML = `
             <div class="empty-cart">
@@ -114,7 +155,64 @@ function displayCart() {
 
     cartContainer.innerHTML = cartHTML;
     displayInCartPage(total);
-    updateCartCount();
+}
+
+function displayPopupCart(cartContainer) {
+    if (cart.length === 0) {
+        cartContainer.innerHTML = `
+            <div class="empty-cart">
+                <h3>Your cart is empty</h3>
+                <p>Add some items to get started!</p>
+            </div>
+        `;
+        updatePopupTotal(0);
+        return;
+    }
+
+    let total = 0;
+    let cartHTML = '';
+
+    cart.forEach(item => {
+        const price = parseFloat(item.price.replace(/[$₹,]/g, ''));
+        const itemTotal = price * item.quantity;
+        total += itemTotal;
+
+        cartHTML += `
+            <div class="cart_product" data-id="${item.id}">
+                <div class="cart_product_img">
+                    <img src="${item.image}" alt="${item.name}">
+                </div>
+                <div class="cart_product_info">
+                    <div class="top_card">
+                        <h4>${item.name}</h4>
+                        <div class="product_price">${item.price}</div>
+                    </div>
+                    <div class="buttom_card">
+                        <div class="counts">
+                            <div class="counts_btns">
+                                <button onclick="updateQuantity(${item.id}, ${item.quantity - 1})">-</button>
+                                <span>${item.quantity}</span>
+                                <button onclick="updateQuantity(${item.id}, ${item.quantity + 1})">+</button>
+                            </div>
+                        </div>
+                        <div class="remove_product" onclick="removeFromCart(${item.id})">
+                            <ion-icon name="trash-outline"></ion-icon>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+
+    cartContainer.innerHTML = cartHTML;
+    updatePopupTotal(total);
+}
+
+function updatePopupTotal(total) {
+    const totalElement = document.getElementById("total_price");
+    if (totalElement) {
+        totalElement.textContent = `₹${total.toFixed(2)}`;
+    }
 }
 
 function displayInCartPage(total) {

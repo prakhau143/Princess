@@ -236,21 +236,30 @@ header nav li:hover::after {
 }
 .icon-cart #cart-counter{
     position: absolute;
-    background-color: red;
+    background: #dc3545;
     color: #fff;
-    width: 17px;
-    height: 17px;
+    width: 20px;
+    height: 20px;
     letter-spacing: 0;
-    font-weight: 400;
-    font-size: 10px;
-    line-height: 17px;
-    box-shadow: 1px 1px 3px #0000004d;
-    opacity: 1;
-    transition: .3s ease-in-out;
+    font-weight: 600;
+    font-size: 11px;
+    line-height: 20px;
+    box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3);
+    transition: all 0.3s ease;
     text-align: center;
     border-radius: 50%;
-    top: -12px;
-    right: -10px;
+    top: -8px;
+    right: -8px;
+    min-width: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.icon-cart #cart-counter:empty,
+.icon-cart #cart-counter.hidden {
+    display: none !important;
 }
 /* ------------------------ cart section ----------------- */
 .cart-section{
@@ -282,20 +291,16 @@ body.showCart .cart-section{
     text-transform: uppercase;
     line-height: 37px;
 }
-.cart_products{
+.cart-section .cart_products{
     flex-grow: 1;
-    overflow-x: auto;
+    overflow: visible;
+    padding-right: 16px;
+    height: auto;
 }
 .cart_products.empty{
     display: flex;
     justify-content: center;
     align-items: center;
-}
-.cart_products {
-    flex-grow: 1;
-    overflow-x: auto;
-    padding-right: 16px ;
-    scrollbar-color: #097a6e;  
 }
 
 .cart_products::-webkit-scrollbar {
@@ -317,114 +322,155 @@ body.showCart .cart-section{
 
 .cart_product{
     display: flex;
-    margin-bottom: 25px;
+    margin-bottom: 16px;
     position: relative;
+    align-items: center;
+    padding: 12px;
+    background: #ffffff;
+    border-radius: 8px;
+    border: 1px solid #f0f0f0;
 }
-.cart_product::after{
-    content: "";
-    position: absolute;
-    bottom: -10px;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background-color: #868686;
-}
+/* Remove the separator line since we have card-style layout now */
 .cart_product .cart_product_img{
-   width: 100px;
-   margin-right: 24px;
+   width: 60px;
+   height: 60px;
+   margin-right: 12px;
+   border-radius: 6px;
+   overflow: hidden;
+   flex-shrink: 0;
+   background: #f8f9fa;
 }
 .cart_product .cart_product_img img{
     width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
 }
 .cart_product_info{
-    width: 80%;
+    flex: 1;
+    min-width: 0;
 }
 .cart_product .top_card{
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 30px;
+    margin-bottom: 8px;
 }
 .cart_product .top_card h4{
-    font-size: 13px;
-    font-weight: 400;
+    font-size: 14px;
+    font-weight: 500;
+    color: #212529;
+    margin: 0;
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 180px;
 }
 .cart_product .top_card .product_price{
-    font-size: 12px;
-    color: #010101;
+    font-size: 13px;
+    color: #495057;
+    font-weight: 600;
+    margin: 0;
+    white-space: nowrap;
 }
 .remove_product{
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
-    border:1px solid rgba(134 134 134 / 50%);
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: 1px solid #dc3545;
+    background: #ffffff;
     display: flex;
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    padding-left: 1px;
+    color: #dc3545;
+    font-size: 16px;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.remove_product:hover {
+    background: #dc3545;
+    color: #ffffff;
+    transform: scale(1.05);
 }
 .cart_total{
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 16px 0;
+    padding: 20px 0;
+    margin-top: auto;
+    border-top: 1px solid #e9ecef;
 }
+
 .cart_total h3{
     font-size: 16px;
-    font-weight: 500;
-}
-.cart_total #total_price{
-    font-size: 16px;
     font-weight: 600;
-    color: red;
+    color: #212529;
+    margin: 0;
+}
+
+.cart_total #total_price{
+    font-size: 18px;
+    font-weight: 700;
+    color: #dc3545;
+    margin: 0;
 }
 .buttom_card{
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 8px;
 }
 .buttom_card .counts{
-    width: 100px;
-    height: 30px;
-    border: 2px solid rgb(134 134 134 / 50%);
+    width: 90px;
+    height: 28px;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
     text-align: center;
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     position: relative;
-    margin-right: 20px;
-    touch-action:manipulation;
+    background: #ffffff;
+    flex-shrink: 0;
 }
 .buttom_card .counts_btns{
     position: absolute;
-    display: block;
-    padding: 0;
-    top: 0;
-    width: 30px;
-    height: 30px;
-    border: 0;
-    background-color: transparent;
-    color:  rgb(134 134 134 / 50%);
-    font-size: 24px;
     display: flex;
     align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: transparent;
     cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    color: #495057;
+    transition: all 0.2s ease;
+    border-radius: 4px;
 }
-.buttom_card .minus{
+
+.buttom_card .counts_btns:hover {
+    background: #f8f9fa;
+    color: #212529;
+}
+
+.buttom_card .counts_btns:first-child {
     left: 0;
-    text-align: left;
-    padding-left: 15px;
 }
-.buttom_card .plus{
+
+.buttom_card .counts_btns:last-child {
     right: 0;
-    text-align: right;
-    padding-right: 15px;
 }
+
 .buttom_card .product_count{
     width: 35px;
-    border: 0px;
+    border: none;
     height: 30px;
-    background: 0px 0px;
+    background: transparent;
     padding: 0;
     font-weight: 400;
     font-size: 14px;
@@ -432,8 +478,9 @@ body.showCart .cart-section{
     text-align: center;
     margin-left: 0 !important;
 }
+
 .buttom_card .product_count:focus{
-    outline: none;  
+    outline: none;
 }
 .closeCart{
     background-color:rgb(134 134 134 / 14%);

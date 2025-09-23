@@ -75,8 +75,13 @@ function viewCart(){
     window.location.href = "cartPage.html"
 }
 
-// Add event listeners for checkout functionality
+// Initialize cart counter on all pages
 document.addEventListener('DOMContentLoaded', function() {
+    // Update cart counter on page load
+    if (typeof updateCartCount === 'function') {
+        updateCartCount();
+    }
+
     // Fix checkout button functionality
     const checkoutButtons = document.querySelectorAll('.checkout');
     checkoutButtons.forEach(button => {

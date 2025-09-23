@@ -1,14 +1,25 @@
 // SMTP-based OTP Authentication System
 class SMTPAuth {
     constructor() {
-        // Detect if we're running on Live Server and use correct API base
-        const currentPort = window.location.port;
-        if (currentPort === '5500' || currentPort === '5501' || currentPort === '5502') {
+        // More robust environment detection
+        const hostname = window.location.hostname;
+        const port = window.location.port;
+
+        // Check for localhost or specific development ports
+        if (hostname === 'localhost' || hostname === '127.0.0.1' ||
+            port === '5500' || port === '5501' || port === '5502' ||
+            port === '3000' || port === '8080') {
             this.apiBase = 'http://localhost:3000/api';
         } else {
+            // For production, use relative path or configure via environment
             this.apiBase = '/api';
         }
-        
+
+        // Allow override via global config (for production flexibility)
+        if (window.OTP_API_BASE) {
+            this.apiBase = window.OTP_API_BASE;
+        }
+
         this.sessionToken = localStorage.getItem('sessionToken');
         this.userEmail = localStorage.getItem('userEmail');
         this.initializeElements();
@@ -157,14 +168,13 @@ class SMTPAuth {
                 }, 100);
             }
         } catch (error) {
-            console.error('Error sending OTP:', error);
-            this.showError(this.invalidEmail, error.message || 'Failed to send OTP. Please try again.');
-            
-            // Show OTP section for error case
-            console.log('🔄 Showing OTP section for testing purposes...');
+            console.error('❌ Error sending OTP:', error);
+            this.showError(this.invalidEmail, 'Failed to send OTP. Please check your connection and try again.');
+
+            // Always show OTP section for testing/debugging
             setTimeout(() => {
-                this.createNewOTPUI();
-            }, 100);
+                this.showOTPSection();
+            }, 500);
         } finally {
             this.setLoadingState(false);
         }

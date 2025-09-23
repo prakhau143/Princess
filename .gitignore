@@ -12,7 +12,23 @@ package-lock.json
 # OS files
 .DS_Store
 Thumbs.db
-
+*.pyc
+ *~
+ pycache
+ .DS_Store
+ *.DS_Store
+ *migrations/
+ *.sqlite3
+ debug-error.log
+ nursing/settings/
+ home/google/credentials.json
+ *media/
+ static/
+ nohup.out
+ .vscode/
+ db.json
+ credentials.json
+ .env
 # Logs
 *.log
 npm-debug.log*
