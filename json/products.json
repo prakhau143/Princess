@@ -2,7 +2,7 @@
   {
     "id": 1,
     "name": "Golden elegance ",
-    "price": "$225.00",
+    "price": "1200.00₹",
     "images": [
       "images/Accessories/Gemini_Generated_Image_48k3l048k3l048k3.png"
     ],
@@ -13,7 +13,7 @@
   {
     "id": 2,
     "name": "A crescent moon pendant with emerald",
-    "price": "$22.00",
+    "price": "350.00₹",
     "images": [
       "images/Accessories/Gemini_Generated_Image_6839vd6839vd6839.png"
     ],
@@ -23,7 +23,7 @@
   {
     "id": 4,
     "name": "Bracelet with pearl and diamond",
-    "price": "$128.00",
+    "price": "850.00₹",
     "images": [
       "images/Accessories/Gemini_Generated_Image_hyo6aahyo6aahyo6.png"
     ],
@@ -33,7 +33,7 @@
   {
     "id": 3,
     "name": "Golden bows elegantly hold hearts",
-    "price": "$77.00",
+    "price": "300.00₹",
     "images": [
       "images/Accessories/Gemini_Generated_Image_8yfvke8yfvke8yfv.png"
     ],
@@ -42,8 +42,8 @@
   },
   {
     "id": 17,
-    "name": "crimson heart chains and earings",
-    "price": "$145.00",
+    "name": "pearl hoop earing with diamond",
+    "price": "120.00₹",
     "images": [
       "images/Accessories/generated-image6.png"
     ],
@@ -54,7 +54,7 @@
   {
     "id": 5,
     "name": "crimson heart chains and earings",
-    "price": "$145.00",
+    "price": "700.00₹",
     "images": [
       "images/Bags/Gemini_Generated_Image_1qnm901qnm901qnm.png"
     ],
@@ -64,8 +64,8 @@
   },
   {
     "id": 6,
-    "name": "Classic Leather Crossbody Bag",
-    "price": "$128.00",
+    "name": "Silver stone ring",
+    "price": "1200.00₹",
     "images": [
       "images/Bags/Gemini_Generated_Image_7on3007on3007on3.png"
     ],
@@ -75,7 +75,7 @@
   {
     "id": 7,
     "name": "Sparkling pink drops",
-    "price": "$89.00",
+    "price": "120.00₹",
     "images": [
       "images/Bags/Gemini_Generated_Image_id1psxid1psxid1p.png"
     ],
@@ -84,18 +84,18 @@
   },
   {
     "id": 15,
-    "name": "crimson heart chains and earings",
-    "price": "$145.00",
+    "name": "Green gem chain bracelet",
+    "price": "850.00₹",
     "images": [
       "images/Bags/generated-image5.png"
     ],
     "category": "Bags",
-    "description": "A passionate crimson heart, brilliantly framed in silver, a timeless declaration of affection."
+    "description": "Graceful gold bracelet adorned with vibrant emerald-cut stones for timeless sophistication."
   },
   {
     "id": 9,
     "name": "azure heart pendant",
-    "price": "$199.00",
+    "price": "1250.00₹",
     "images": [
       "images/background/woman/Gemini_Generated_Image_k64n9yk64n9yk64n.png"
     ],
@@ -106,7 +106,7 @@
   {
     "id": 11,
     "name": "Multi layer chains with opal pendant",
-    "price": "$89.00",
+    "price": "400.00₹",
     "images": [
       "images/background/woman/Gemini_Generated_Image_x5nt9ox5nt9ox5nt.png"
     ],
@@ -115,8 +115,8 @@
   },
   {
     "id": 12,
-    "name": "Delicate gold wreath earrings",
-    "price": "$89.00",
+    "name": "heart perl earings",
+    "price": "120.00₹",
     "images": [
       "images/Jewelry/generated-image1.png"
     ],
@@ -125,8 +125,8 @@
   },
   {
     "id": 14,
-    "name": "gold open hoop earrings",
-    "price": "$89.00",
+    "name": "heart pendant",
+    "price": "500.00₹",
     "images": [
       "images/Jewelry/generated-image3.png"
     ],
@@ -136,7 +136,7 @@
   {
     "id": 10,
     "name": "An iridescent heart Gold pendant",
-    "price": "$158.00",
+    "price": "600.00₹",
     "images": [
       "images/background/woman/Gemini_Generated_Image_ln58w4ln58w4ln58.png"
     ],
@@ -145,22 +145,22 @@
   },
   {
     "id": 18,
-    "name": "An iridescent heart Gold pendant",
-    "price": "$158.00",
+    "name": "iridescent heart Silver pendant ",
+    "price": "2700.00₹",
     "images": [
       "images/background/WhatsApp2.jpeg"
     ],
     "category": "Jewelry",
-    "description": "An iridescent heart, shimmering with celestial light, exquisitely framed in silver for a touch of refined elegance."
+    "description": "Discover elegance redefined with our exquisite collection of handcrafted jewelry. Each piece is a timeless blend of artistry and luxury, designed to celebrate your unique style and life's special moments"
   },
   {
     "id": 19,
-    "name": "An iridescent heart Gold pendant",
-    "price": "$158.00",
+    "name": "Golden bangle",
+    "price": "850₹",
     "images": [
       "images/background/whatsapp1.jpeg"
     ],
     "category": "Jewelry",
-    "description": "An iridescent heart, shimmering with celestial light, exquisitely framed in silver for a touch of refined elegance."
+    "description": "Golden bangle with vibrant green accents for a bold, timeless look."
   }
 ]
