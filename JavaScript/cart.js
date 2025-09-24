@@ -316,10 +316,14 @@ async function placeOrder() {
         const orderData = {
             customerData,
             items: cart,
-            total: cart.reduce((sum, item) => {
-                const price = parseFloat(item.price.replace(/[$₹,]/g, ''));
-                return sum + (price * item.quantity);
-            }, 0) + 70, // Adding shipping
+            total: (() => {
+                const subtotal = cart.reduce((sum, item) => {
+                    const price = parseFloat(item.price.replace(/[$₹,]/g, ''));
+                    return sum + (price * item.quantity);
+                }, 0);
+                const shipping = subtotal >= 70 ? 0 : 70;
+                return subtotal + shipping;
+            })(),
             orderDate: new Date().toISOString()
         };
 

@@ -104,7 +104,7 @@ class CheckoutManager {
             `;
         });
 
-        const shipping = subtotal > 500 ? 0 : 70;
+        const shipping = subtotal >= 70 ? 0 : 70;
         const finalTotal = subtotal + shipping;
 
         orderItemsContainer.innerHTML = itemsHTML;
