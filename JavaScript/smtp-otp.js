@@ -1,21 +1,21 @@
 // SMTP-based OTP Authentication System
 class SMTPAuth {
     constructor() {
-        // More robust environment detection
+        // Determine API base URL based on environment
         const hostname = window.location.hostname;
         const port = window.location.port;
-
-        // Check for localhost or specific development ports
-        if (hostname === 'localhost' || hostname === '127.0.0.1' ||
-            port === '5500' || port === '5501' || port === '5502' ||
-            port === '3000' || port === '8080') {
+        
+        if (hostname === 'localhost' || hostname === '127.0.0.1' || port === '5500' || port === '3000' || port === '8080') {
             this.apiBase = 'http://localhost:3000/api';
+        } else if (hostname === 'princessjewellery.in' || hostname === 'www.princessjewellery.in') {
+            // Production environment for Princess Jewellery
+            this.apiBase = 'https://princessjewellery.in/api';
         } else {
-            // For production, use relative path or configure via environment
+            // Default production environment
             this.apiBase = '/api';
         }
-
-        // Allow override via global config (for production flexibility)
+        
+        // Allow override via global variable
         if (window.OTP_API_BASE) {
             this.apiBase = window.OTP_API_BASE;
         }

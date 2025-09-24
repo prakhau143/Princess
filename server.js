@@ -26,12 +26,16 @@ app.use(helmet({
         }
     }
 }));
+
+// CORS configuration
 app.use(cors({
-    origin: ['http://localhost:3000', 'http://127.0.0.1:5500', 'http://127.0.0.1:5501', 'http://127.0.0.1:5502'],
-    credentials: true
+    origin: process.env.NODE_ENV === 'production' 
+        ? ['https://princessjewellery.in', 'https://www.princessjewellery.in'] 
+        : ['http://localhost:3000', 'http://127.0.0.1:3000', 'http://localhost:5500'],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization']
 }));
-app.use(express.json({ limit: '10mb' }));
-app.use(express.static('./'));
 
 // Rate limiting
 const limiter = rateLimit({
@@ -130,11 +134,22 @@ try {
         transporter.verify((error, success) => {
             if (error) {
                 console.error('❌ SMTP connection failed:', error);
+                console.error('Error details:', error.message);
+                if (process.env.NODE_ENV === 'production') {
+                    console.log('🔧 For production deployment, ensure:');
+                    console.log('   - Gmail 2FA is enabled');
+                    console.log('   - App password is generated and correct');
+                    console.log('   - Environment variables are properly set');
+                }
                 transporter = null;
             } else {
                 console.log('✅ SMTP server is ready to send emails');
                 console.log(`📧 Email service configured with: ${process.env.GMAIL_USER}`);
                 console.log(`🛍️ Store name: ${process.env.STORE_NAME || 'Princess'}`);
+                console.log(`🌐 Environment: ${process.env.NODE_ENV || 'development'}`);
+                if (process.env.DOMAIN) {
+                    console.log(`🔗 Domain: ${process.env.DOMAIN}`);
+                }
             }
         });
     } else {

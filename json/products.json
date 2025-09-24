@@ -1,157 +1,166 @@
 [
   {
     "id": 1,
-    "name": "Crystal-Trim Cat-Eye Shades",
+    "name": "Golden elegance ",
     "price": "$225.00",
     "images": [
-      "images/Accessories/IMG_6919.JPG"
+      "images/Accessories/Gemini_Generated_Image_48k3l048k3l048k3.png"
     ],
     "category": "Accessories",
     "isTrending": true,
-    "description": "Vintage cat-eye sunglasses embellished with crystal trim. UV400 protection and lightweight frame."
+    "description": "Golden whispers of elegance, a symphony of nature's grace crafted for your adornment."
   },
   {
     "id": 2,
-    "name": "Silk Hair Scarf – Blush",
+    "name": "A crescent moon pendant with emerald",
     "price": "$22.00",
     "images": [
-      "images/Accessories/IMG_6921.JPG"
+      "images/Accessories/Gemini_Generated_Image_6839vd6839vd6839.png"
     ],
     "category": "Accessories",
-    "description": "Soft silk-blend triangle hair scarf in blush tone. Style around hair, neck or bag."
-  },
-  {
-    "id": 3,
-    "name": "Platform Canvas Sneakers – Ivory",
-    "price": "$77.00",
-    "images": [
-      "images/Accessories/IMG_6929.JPG"
-    ],
-    "category": "Accessories",
-    "description": "Everyday canvas sneakers with elevated platform sole and cushioned insole."
+    "description": "A crescent moon, shimmering with ethereal glow, cradling a starlit dream."
   },
   {
     "id": 4,
-    "name": "Quilted Heeled Mule – Latte",
+    "name": "Bracelet with pearl and diamond",
     "price": "$128.00",
     "images": [
-      "images/Accessories/IMG_6933.JPG"
+      "images/Accessories/Gemini_Generated_Image_hyo6aahyo6aahyo6.png"
     ],
     "category": "Accessories",
-    "description": "Square-toe heeled mules with quilted upper and padded footbed for comfort."
+    "description": "A captivating golden embrace, kissed by an emerald's timeless allure"
+  },
+  {
+    "id": 3,
+    "name": "Golden bows elegantly hold hearts",
+    "price": "$77.00",
+    "images": [
+      "images/Accessories/Gemini_Generated_Image_8yfvke8yfvke8yfv.png"
+    ],
+    "category": "Accessories",
+    "description": "Golden bows elegantly hold hearts of desire, a sweet whisper of charm for your ears."
+  },
+  {
+    "id": 17,
+    "name": "crimson heart chains and earings",
+    "price": "$145.00",
+    "images": [
+      "images/Accessories/generated-image6.png"
+    ],
+    "category": "Woman",
+    "isTrending": true,
+    "description": "A passionate crimson heart, brilliantly framed in silver, a timeless declaration of affection."
   },
   {
     "id": 5,
-    "name": "Elegant Pearl Chain Handbag",
+    "name": "crimson heart chains and earings",
     "price": "$145.00",
     "images": [
-      "images/Bags/IMG_6930.JPG"
+      "images/Bags/Gemini_Generated_Image_1qnm901qnm901qnm.png"
     ],
     "category": "Bags",
     "isTrending": true,
-    "description": "Sophisticated handbag with pearl chain strap. Perfect for evening events and special occasions."
+    "description": "A passionate crimson heart, brilliantly framed in silver, a timeless declaration of affection."
   },
   {
     "id": 6,
     "name": "Classic Leather Crossbody Bag",
     "price": "$128.00",
     "images": [
-      "images/Bags/IMG_6931.JPG"
+      "images/Bags/Gemini_Generated_Image_7on3007on3007on3.png"
     ],
     "category": "Bags",
-    "description": "Timeless leather crossbody bag with adjustable strap and multiple compartments."
+    "description": "Brilliant diamonds meet organic elegance in this captivating silver design"
   },
   {
     "id": 7,
-    "name": "Vintage Quilted Evening Clutch",
+    "name": "Sparkling pink drops",
     "price": "$89.00",
     "images": [
-      "images/Bags/IMG_6942.JPG"
+      "images/Bags/Gemini_Generated_Image_id1psxid1psxid1p.png"
     ],
     "category": "Bags",
-    "description": "Vintage-inspired quilted clutch with intricate pattern and gold-tone hardware."
-  },
-  {
-    "id": 8,
-    "name": "Designer Chain Shoulder Bag",
-    "price": "$195.00",
-    "images": [
-      "images/Bags/IMG_6945.JPG"
-    ],
-    "category": "Bags",
-    "isTrending": true,
-    "description": "Designer shoulder bag featuring premium materials with decorative chain details."
-  },
-  {
-    "id": 9,
-    "name": "Luxury Beaded Evening Purse",
-    "price": "$165.00",
-    "images": [
-      "images/Bags/IMG_6946.JPG"
-    ],
-    "category": "Bags",
-    "description": "Handcrafted beaded evening purse with intricate beadwork and elegant finish."
-  },
-  {
-    "id": 10,
-    "name": "Sun-Bleached Denim – Look 01",
-    "price": "$199.00",
-    "images": [
-      "images/background/woman/IMG_6938.JPG"
-    ],
-    "category": "Woman",
-    "isTrending": true,
-    "description": "Editorial background shot – relaxed-fit sun-bleached denim jacket styling."
-  },
-  {
-    "id": 11,
-    "name": "Soft Knit Co-ord – Look 02",
-    "price": "$158.00",
-    "images": [
-      "images/background/woman/IMG_6939.JPG"
-    ],
-    "category": "Woman",
-    "description": "Background/woman campaign still of soft knit co-ord in neutral palette."
-  },
-  {
-    "id": 12,
-    "name": "Ribbed Cardigan – Look 03",
-    "price": "$89.00",
-    "images": [
-      "images/background/woman/IMG_6940.JPG"
-    ],
-    "category": "Woman",
-    "description": "Ribbed layering cardigan, longline fit and breathable knit."
-  },
-  {
-    "id": 13,
-    "name": "Butterfly Charm Hoop Earrings",
-    "price": "$71.00",
-    "images": [
-      "images/Jewelry/IMG_6942.JPG"
-    ],
-    "category": "Jewelry",
-    "isTrending": true,
-    "description": "Whimsical butterfly charm hoops in gold tone with CZ accents."
-  },
-  {
-    "id": 14,
-    "name": "Row Clear CZ Band Ring",
-    "price": "$106.00",
-    "images": [
-      "images/Jewelry/IMG_6943.JPG"
-    ],
-    "category": "Jewelry",
-    "description": "Minimal band ring featuring a continuous row of clear CZ stones."
+    "description": "Sparkling pink drops, a cascade of delicate charm and radiant brilliance."
   },
   {
     "id": 15,
-    "name": "Star & Moon Pendant Necklace",
-    "price": "$166.00",
+    "name": "crimson heart chains and earings",
+    "price": "$145.00",
     "images": [
-      "images/Jewelry/IMG_6944.JPG"
+      "images/Bags/generated-image5.png"
+    ],
+    "category": "Bags",
+    "description": "A passionate crimson heart, brilliantly framed in silver, a timeless declaration of affection."
+  },
+  {
+    "id": 9,
+    "name": "azure heart pendant",
+    "price": "$199.00",
+    "images": [
+      "images/background/woman/Gemini_Generated_Image_k64n9yk64n9yk64n.png"
+    ],
+    "category": "Woman",
+    "isTrending": true,
+    "description": "A captivating azure heart, cradled in silver, echoing the tranquil beauty of the deep sea."
+  },
+  {
+    "id": 11,
+    "name": "Multi layer chains with opal pendant",
+    "price": "$89.00",
+    "images": [
+      "images/background/woman/Gemini_Generated_Image_x5nt9ox5nt9ox5nt.png"
+    ],
+    "category": "Woman",
+    "description": "An iridescent heart, shimmering with celestial light, exquisitely framed in silver for a touch of refined elegance"
+  },
+  {
+    "id": 12,
+    "name": "Delicate gold wreath earrings",
+    "price": "$89.00",
+    "images": [
+      "images/Jewelry/generated-image1.png"
     ],
     "category": "Jewelry",
-    "description": "Celestial pendant necklace with star and crescent moon motifs."
+    "description": "Delicate gold wreath earrings adorned with lustrous pearls and sparkling diamonds for timeless elegance"
+  },
+  {
+    "id": 14,
+    "name": "gold open hoop earrings",
+    "price": "$89.00",
+    "images": [
+      "images/Jewelry/generated-image3.png"
+    ],
+    "category": "Jewelry",
+    "description": "Modern lilac and gold open hoop earrings that add a touch of elegance and charm to every outfit."
+  },
+  {
+    "id": 10,
+    "name": "An iridescent heart Gold pendant",
+    "price": "$158.00",
+    "images": [
+      "images/background/woman/Gemini_Generated_Image_ln58w4ln58w4ln58.png"
+    ],
+    "category": "Jewelry",
+    "description": "An iridescent heart, shimmering with celestial light, exquisitely framed in silver for a touch of refined elegance."
+  },
+  {
+    "id": 18,
+    "name": "An iridescent heart Gold pendant",
+    "price": "$158.00",
+    "images": [
+      "images/background/WhatsApp2.jpeg"
+    ],
+    "category": "Jewelry",
+    "description": "An iridescent heart, shimmering with celestial light, exquisitely framed in silver for a touch of refined elegance."
+  },
+  {
+    "id": 19,
+    "name": "An iridescent heart Gold pendant",
+    "price": "$158.00",
+    "images": [
+      "images/background/whatsapp1.jpeg"
+    ],
+    "category": "Jewelry",
+    "description": "An iridescent heart, shimmering with celestial light, exquisitely framed in silver for a touch of refined elegance."
   }
 ]
